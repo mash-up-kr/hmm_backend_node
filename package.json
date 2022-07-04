@@ -18,7 +18,13 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "docker:build": "docker build -f Dockerfile . -t name",
+    "docker:start": "docker run -p 3000:3000 name",
+    "docker:remove:all": "docker rmi $(docker images -a -q)",
+    "lima:build": "lima nerdctl build -f Dockerfile . -t name",
+    "lima:start": "lima nerdctl run -p 3000:3000 name",
+    "lima:remove:all": "lima nerdctl rmi $(docker images -a -q)"
   },
   "dependencies": {
     "@nestjs/common": "^8.4.7",
