@@ -1,9 +1,12 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import * as Joi from 'joi';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
+import { TypeOrmConfig } from './core/db/TypeOrmConfig';
+import * as ormconfig from '../ormconfig';
 
 @Module({
   imports: [
@@ -19,6 +22,7 @@ import { UsersModule } from './users/users.module';
         DB_DATABASE: Joi.string().required(),
       }),
     }),
+    TypeOrmModule.forRoot(ormconfig),
     UsersModule,
   ],
   controllers: [AppController],
