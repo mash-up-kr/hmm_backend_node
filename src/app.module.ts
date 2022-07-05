@@ -5,7 +5,6 @@ import * as Joi from 'joi';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
-import { TypeOrmConfig } from './core/db/TypeOrmConfig';
 import * as ormconfig from '../ormconfig';
 
 @Module({
