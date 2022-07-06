@@ -1,5 +1,7 @@
 {
   "compilerOptions": {
+    "outDir": "dist",
+    "noEmit": false,
     "module": "commonjs",
     "declaration": true,
     "removeComments": true,
@@ -8,14 +10,16 @@
     "allowSyntheticDefaultImports": true,
     "target": "es2017",
     "sourceMap": true,
-    "outDir": "./dist",
     "baseUrl": "./",
-    "incremental": true,
-    "skipLibCheck": true,
-    "strictNullChecks": false,
-    "noImplicitAny": false,
-    "strictBindCallApply": false,
-    "forceConsistentCasingInFileNames": false,
-    "noFallthroughCasesInSwitch": false
-  }
+    "incremental": false,
+    "esModuleInterop": true,
+    "strict": true,
+    "strictPropertyInitialization": false
+  },
+  "include": [
+    "src/**/*.ts"
+, "TypeOrmConfig.ts"  ],
+  "exclude": [
+    "**/__test__/**"
+  ]
 }
