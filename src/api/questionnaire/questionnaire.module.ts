@@ -2,8 +2,8 @@ import { Module } from '@nestjs/common';
 import { QuestionnaireService } from './service/questionnaire.service';
 import { QuestionnaireController } from './controller/questionnaire.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { QuestionnaireListEntity } from './model/questionnaireList.entity';
-import { QuestionnaireDetailEntity } from './model/questionnaireDetail.entity';
+import { QuestionnaireListEntity } from './model/questionnaire-list.entity';
+import { QuestionnaireDetailEntity } from './model/questionnaire-detail.entity';
 
 @Module({
   providers: [QuestionnaireService],

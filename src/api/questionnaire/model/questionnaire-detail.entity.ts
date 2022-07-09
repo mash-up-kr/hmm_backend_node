@@ -5,7 +5,7 @@ import {
   ManyToOne,
   JoinColumn,
 } from 'typeorm';
-import { QuestionnaireListEntity } from './questionnaireList.entity';
+import { QuestionnaireListEntity } from './questionnaire-list.entity';
 
 @Entity({ name: 'QuestionnaireDetail' })
 export class QuestionnaireDetailEntity {
