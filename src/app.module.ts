@@ -5,6 +5,7 @@ import * as Joi from 'joi';
 import { UsersModule } from './api/users/users.module';
 import * as ormconfig from '../ormconfig';
 import { GroupModule } from './api/group/group.module';
+import { QuestionnaireModule } from './api/questionnaire/questionnaire.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { GroupModule } from './api/group/group.module';
     TypeOrmModule.forRoot(ormconfig),
     UsersModule,
     GroupModule,
+    QuestionnaireModule,
   ],
 })
 export class AppModule {}
