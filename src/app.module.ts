@@ -2,10 +2,8 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import * as Joi from 'joi';
-import { UsersModule } from './api/users/users.module';
 import * as ormconfig from '../ormconfig';
-import { GroupModule } from './api/group/group.module';
-import { QuestionnaireModule } from './api/questionnaire/questionnaire.module';
+import { ApiModule } from './api/api.module';
 
 @Module({
   imports: [
@@ -22,9 +20,7 @@ import { QuestionnaireModule } from './api/questionnaire/questionnaire.module';
       }),
     }),
     TypeOrmModule.forRoot(ormconfig),
-    UsersModule,
-    GroupModule,
-    QuestionnaireModule,
+    ApiModule,
   ],
 })
 export class AppModule {}
