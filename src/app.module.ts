@@ -2,9 +2,9 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import * as Joi from 'joi';
-import { UsersModule } from './api/users/users.module';
+import { MemberModule } from './api/member/member.module';
 import * as ormconfig from '../ormconfig';
-import { GroupModule } from './api/group/group.module';
+import { FriendGroupModule } from './api/friend-group/friend-group.module';
 import { QuestionnaireModule } from './api/questionnaire/questionnaire.module';
 
 @Module({
@@ -22,8 +22,8 @@ import { QuestionnaireModule } from './api/questionnaire/questionnaire.module';
       }),
     }),
     TypeOrmModule.forRoot(ormconfig),
-    UsersModule,
-    GroupModule,
+    MemberModule,
+    FriendGroupModule,
     QuestionnaireModule,
   ],
 })

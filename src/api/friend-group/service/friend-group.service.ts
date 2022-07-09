@@ -1,16 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { GroupEntity } from '../model/group.entity';
+import { FriendGroupEntity } from '../model/friend-group.entity';
 import { Repository } from 'typeorm';
 
 @Injectable()
-export class GroupService {
+export class FriendGroupService {
   constructor(
-    @InjectRepository(GroupEntity)
-    private repository: Repository<GroupEntity>,
+    @InjectRepository(FriendGroupEntity)
+    private repository: Repository<FriendGroupEntity>,
   ) {}
 
-  async findAll(): Promise<GroupEntity[]> {
+  async findAll(): Promise<FriendGroupEntity[]> {
     const result = await this.repository.find();
     // TODO :  못찾았으면 어찌할지?
     if (!result) {
@@ -19,7 +19,7 @@ export class GroupService {
     return result;
   }
 
-  async findOne(id: number): Promise<GroupEntity | null> {
+  async findOne(id: number): Promise<FriendGroupEntity | null> {
     return await this.repository.findOneBy({ id });
   }
 
@@ -27,7 +27,7 @@ export class GroupService {
     await this.repository.delete(id);
   }
 
-  async set(info: GroupEntity) {
+  async set(info: FriendGroupEntity) {
     await this.repository.save(info);
   }
 }
