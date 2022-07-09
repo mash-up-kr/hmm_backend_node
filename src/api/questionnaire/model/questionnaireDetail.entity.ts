@@ -1,7 +1,13 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
 import { QuestionnaireListEntity } from './questionnaireList.entity';
 
-@Entity('QuestionnaireDetail')
+@Entity({ name: 'QuestionnaireDetail' })
 export class QuestionnaireDetailEntity {
   @PrimaryGeneratedColumn()
   id: number;
@@ -10,7 +16,8 @@ export class QuestionnaireDetailEntity {
     () => QuestionnaireListEntity,
     (questionnaireList) => questionnaireList.id,
   )
-  questionListId: number;
+  @JoinColumn({ name: 'questionListId', referencedColumnName: 'id' })
+  questionList: QuestionnaireListEntity;
 
   @Column()
   question: string;

@@ -13,8 +13,8 @@ export class FriendListEntity {
   id: number;
 
   @ManyToOne(() => FriendGroupEntity, (groupEntity) => groupEntity.id)
-  @JoinColumn({ name: 'groupId', referencedColumnName: 'id' })
-  groupId: FriendGroupEntity;
+  @JoinColumn({ name: 'friendGroupId', referencedColumnName: 'id' })
+  group: FriendGroupEntity;
 
   @Column({
     name: 'name',
