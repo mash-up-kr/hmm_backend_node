@@ -1,7 +1,7 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity({ name: 'group' })
-export class Group {
+export class GroupEntity {
   @PrimaryGeneratedColumn({ name: 'id', comment: '그룹 ID' })
   id: number;
 
