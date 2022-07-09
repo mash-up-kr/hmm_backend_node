@@ -9,8 +9,7 @@ import { validateSchemaForConfig } from './core/validation/validateSchemaForConf
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath:
-        process.env.NODE_ENV === 'production' ? '.env.prod' : '.env.dev',
+      envFilePath: [`.env.${process.env.NODE_ENV}`],
       validationSchema: validateSchemaForConfig,
     }),
     TypeOrmModule.forRoot(ormconfig),
