@@ -23,5 +23,8 @@ export class QuestionnaireDetailEntity {
   question: string;
 
   @Column()
-  answer: string;
+  myAnswer: string;
+
+  @Column()
+  friendAnswer: string;
 }
