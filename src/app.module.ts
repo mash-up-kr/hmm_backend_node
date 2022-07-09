@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import * as ormconfig from '../ormconfig';
+import * as ormconfig from './core/config/ormconfig';
 import { ApiModule } from './api/api.module';
 import { validateSchemaForConfig } from './core/validation/validateSchemaForConfig';
 
