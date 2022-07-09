@@ -4,8 +4,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import * as Joi from 'joi';
 import { UsersModule } from './api/users/users.module';
 import * as ormconfig from '../ormconfig';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 
 @Module({
   imports: [
@@ -24,7 +22,5 @@ import { AppService } from './app.service';
     TypeOrmModule.forRoot(ormconfig),
     UsersModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
 })
 export class AppModule {}
