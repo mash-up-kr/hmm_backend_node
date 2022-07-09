@@ -7,9 +7,11 @@ export class QuestionnaireListEntity {
   id: number;
 
   // @ManyToOne(() => Users, (user) => user.id)
+  @Column()
   from: number;
 
   // @ManyToOne(() => Users, (user) => user.id)
+  @Column()
   to: number;
 
   @Column()
