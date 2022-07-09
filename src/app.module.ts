@@ -1,30 +1,21 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import * as Joi from 'joi';
-import { UsersModule } from './api/users/users.module';
-import * as ormconfig from '../ormconfig';
-import { GroupModule } from './api/group/group.module';
-import { QuestionnaireModule } from './api/questionnaire/questionnaire.module';
+import * as ormconfig from './core/config/ormconfig';
+import { ApiModule } from './api/api.module';
+import { validateSchemaForConfig } from './core/validation/validateSchemaForConfig';
+import databaseConfig from './core/config/database.config';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath:
-        process.env.NODE_ENV === 'production' ? '.env.prod' : '.env.dev',
-      validationSchema: Joi.object({
-        DB_HOST: Joi.string().required(),
-        DB_PORT: Joi.string().required(),
-        DB_USERNAME: Joi.string().required(),
-        DB_PASSWORD: Joi.string().required(),
-        DB_DATABASE: Joi.string().required(),
-      }),
+      envFilePath: [`.env.${process.env.NODE_ENV}`],
+      validationSchema: validateSchemaForConfig,
+      load: [databaseConfig],
     }),
     TypeOrmModule.forRoot(ormconfig),
-    UsersModule,
-    GroupModule,
-    QuestionnaireModule,
+    ApiModule,
   ],
 })
 export class AppModule {}
