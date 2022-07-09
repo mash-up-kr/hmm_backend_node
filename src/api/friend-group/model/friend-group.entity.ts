@@ -14,7 +14,7 @@ export class FriendGroupEntity {
 
   @ManyToOne(() => Member, (member) => member.id)
   @JoinColumn({ name: 'userId', referencedColumnName: 'id' })
-  userId: number;
+  userId: Member;
 
   @Column({
     name: 'name',
