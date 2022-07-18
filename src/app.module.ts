@@ -19,6 +19,8 @@ import { QuestionnaireModule } from './api/questionnaire/questionnaire.module';
         DB_USERNAME: Joi.string().required(),
         DB_PASSWORD: Joi.string().required(),
         DB_DATABASE: Joi.string().required(),
+        JWT_ACCESS_TOKEN_SECRET: Joi.string().required(),
+        JWT_ACCESS_TOKEN_EXPIRATION: Joi.string().required(),
       }),
     }),
     TypeOrmModule.forRoot(ormconfig),
