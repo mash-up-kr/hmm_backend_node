@@ -43,7 +43,7 @@ export class MemberService {
   }
 
   async login(member: Member): Promise<IToken> {
-    const payload: Partial<Member> = { kakaoId: member.id };
+    const payload: Partial<Member> = { id: member.id };
     const accessToken: string = this.jwtService.sign(payload, {
       secret: process.env.JWT_ACCESS_TOKEN_SECRET,
       expiresIn: process.env.JWT_ACCESS_TOKEN_EXPIRATION,

@@ -1,4 +1,12 @@
-import { Controller, Post, UseGuards, Body } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  UseGuards,
+  Body,
+  Get,
+  Request,
+} from '@nestjs/common';
+import { JwtAuthGuard } from '../guard/jwt.guard';
 import { KakaoAuthGuard } from '../guard/kakao-login.guard';
 import { IMember, IToken } from '../interface/member.interface';
 import { Member } from '../model/member.entity';
@@ -15,4 +23,11 @@ export class MemberController {
 
     return await this.memberService.login(member);
   }
+
+  // 친구목록 불러오기
+  // @UseGuards(JwtAuthGuard)
+  // @Get('member/friend-list')
+  // async getFriendList(@Request() req: any) {
+  //   return req.user.id;
+  // }
 }
