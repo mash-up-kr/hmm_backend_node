@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { QuestionnaireListEntity } from '../model/questionnaireList.entity';
+import { QuestionnaireListEntity } from '../model/questionnaire-list.entity';
 import { Repository } from 'typeorm';
-import { QuestionnaireDetailEntity } from '../model/questionnaireDetail.entity';
+import { QuestionnaireDetailEntity } from '../model/questionnaire-detail.entity';
 
 @Injectable()
 export class QuestionnaireService {

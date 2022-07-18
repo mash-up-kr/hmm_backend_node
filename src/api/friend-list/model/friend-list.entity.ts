@@ -1,18 +1,20 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { FriendGroupEntity } from '../../friend-group/model/friend-group.entity';
 
 @Entity({ name: 'FriendList' })
 export class FriendListEntity {
   @PrimaryGeneratedColumn({ name: 'id', comment: '친구목록 ID' })
   id: number;
 
-  //TODO: 관계설정하기
-  // @JoinColumn({ name: 'userId', referencedColumnName: 'id' })
-  // @ManyToOne()
-  @Column({
-    name: 'groupId',
-    comment: '그룹 ID',
-  })
-  groupId: number;
+  @ManyToOne(() => FriendGroupEntity, (groupEntity) => groupEntity.id)
+  @JoinColumn({ name: 'friendGroupId', referencedColumnName: 'id' })
+  group: FriendGroupEntity;
 
   @Column({
     name: 'name',
