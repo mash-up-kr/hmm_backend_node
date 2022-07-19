@@ -20,10 +20,10 @@ export class QuestionnaireDetailEntity {
   @JoinColumn({ name: 'questionListId', referencedColumnName: 'id' })
   questionList: QuestionnaireListEntity;
 
-  @Column()
+  @Column({ nullable: true })
   question: string;
 
-  @Column()
+  @Column({ nullable: true })
   myAnswer: string;
 
   @Column()
