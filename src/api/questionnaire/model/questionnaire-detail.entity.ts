@@ -20,12 +20,12 @@ export class QuestionnaireDetailEntity {
   @JoinColumn({ name: 'questionListId', referencedColumnName: 'id' })
   questionList: QuestionnaireListEntity;
 
-  @Column({ nullable: true })
+  @Column()
   question: string;
 
   @Column({ nullable: true })
   myAnswer: string;
 
-  @Column()
+  @Column({ nullable: true })
   friendAnswer: string;
 }
