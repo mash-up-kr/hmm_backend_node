@@ -1,4 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { QuestionnaireListEntity } from '../model/questionnaire-list.entity';
 import { Repository } from 'typeorm';
@@ -44,6 +49,14 @@ export class QuestionnaireService {
       const to_member = await this.findMemberById(createDto.toId);
 
       if (!from_member || !to_member) {
+        // 에러처리 추후에 수정 필요
+        throw new HttpException(
+          {
+            status: HttpStatus.BAD_REQUEST,
+            error: 'member id not found',
+          },
+          HttpStatus.BAD_REQUEST,
+        );
       } else {
         list.from = from_member;
         list.to = to_member;
@@ -56,7 +69,15 @@ export class QuestionnaireService {
         const saved_details = await this.detailEntityRepository.save(details);
         return saved_details;
       }
-    } catch (e) {}
+    } catch (e) {
+      throw new HttpException(
+        {
+          status: HttpStatus.INTERNAL_SERVER_ERROR,
+          error: 'try again later',
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   async createDetail(createDetailDto: CreateQuestionnaireDetailDto) {
