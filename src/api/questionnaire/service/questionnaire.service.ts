@@ -30,11 +30,15 @@ export class QuestionnaireService {
     return await this.detailEntityRepository.find();
   }
 
-  async putAnswer(createAnswerDto: CreateQuestionnaireAnswerDto[]) {
+  // 답변 생성
+  async putAnswer(
+    createAnswerDto: CreateQuestionnaireAnswerDto[],
+  ): Promise<QuestionnaireDetailEntity[]> {
     const return_details: QuestionnaireDetailEntity[] = [];
 
     for (const answer of createAnswerDto) {
-      const detail = await this.findDetailById(answer.id);
+      const detail: QuestionnaireDetailEntity | null =
+        await this.findDetailById(answer.questionId);
       if (!detail) {
         // 에러처리 필요
         console.log('error');
