@@ -14,10 +14,18 @@ export class QuestionnaireService {
     private detailEntityRepository: Repository<QuestionnaireDetailEntity>,
   ) {}
 
-  findDetailById(detail_id: number) {
+  findDetailById(detail_id: number): Promise<QuestionnaireDetailEntity | null> {
     return this.detailEntityRepository.findOne({
       where: {
         id: detail_id,
+      },
+    });
+  }
+
+  findListById(listId: number): Promise<QuestionnaireListEntity | null> {
+    return this.listEntityRepository.findOne({
+      where: {
+        id: listId,
       },
     });
   }
@@ -32,21 +40,36 @@ export class QuestionnaireService {
 
   // 답변 생성
   async putAnswer(
+    listId: number,
     createAnswerDto: CreateQuestionnaireAnswerDto[],
   ): Promise<QuestionnaireDetailEntity[]> {
+    // 답변 받은 질문 목록 저장
     const return_details: QuestionnaireDetailEntity[] = [];
+    const list: QuestionnaireListEntity | null = await this.findListById(
+      listId,
+    );
 
-    for (const answer of createAnswerDto) {
-      const detail: QuestionnaireDetailEntity | null =
-        await this.findDetailById(answer.questionId);
-      if (!detail) {
-        // 에러처리 필요
-        console.log('error');
-      } else {
-        detail.friendAnswer = answer.friendAnswer;
-        await this.detailEntityRepository.save(detail);
-        return_details.push(detail);
+    if (!list) {
+      // 에러처리 필요
+      console.log('error');
+    } else {
+      for (const answer of createAnswerDto) {
+        const detail: QuestionnaireDetailEntity | null =
+          await this.findDetailById(answer.questionId);
+
+        if (!detail) {
+          // 에러처리 필요
+          console.log('error');
+        } else {
+          // 답변 수정
+          detail.friendAnswer = answer.friendAnswer;
+          return_details.push(await this.detailEntityRepository.save(detail));
+        }
       }
+
+      // 질문지 답변 완료로 변경
+      list.isCompleted = true;
+      await this.listEntityRepository.save(list);
     }
 
     return return_details;

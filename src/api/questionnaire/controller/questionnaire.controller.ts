@@ -18,10 +18,12 @@ export class QuestionnaireController {
   }
 
   // 답변 생성
-  @Patch()
+  @Patch('/:listId')
   async putAnswer(
-    @Body() createAnswerDto: CreateQuestionnaireAnswerDto[],
+    @Param('listId') listId: number,
+    @Body()
+    createAnswerDto: CreateQuestionnaireAnswerDto[],
   ): Promise<QuestionnaireDetailEntity[]> {
-    return await this.questionnaireService.putAnswer(createAnswerDto);
+    return await this.questionnaireService.putAnswer(listId, createAnswerDto);
   }
 }
