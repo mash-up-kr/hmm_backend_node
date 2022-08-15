@@ -1,6 +1,5 @@
 import { Body, Controller, Get, Post } from '@nestjs/common';
 import { QuestionnaireService } from '../service/questionnaire.service';
-import { CreateQuestionnaireListDto } from '../model/create-questionnaire-list.dto';
 import { CreateQuestionnaireDetailDto } from '../model/create-questionnaire-detail.dto';
 import { CreateQuestionnaireDto } from '../model/create-questionnaire-dto';
 
@@ -13,8 +12,9 @@ export class QuestionnaireController {
     return await this.questionnaireService.findAllList();
   }
 
+  // 질문지 생성
   @Post()
-  async createList(@Body() createDto: CreateQuestionnaireDto) {
+  async createQuestionnaire(@Body() createDto: CreateQuestionnaireDto) {
     return await this.questionnaireService.createQuestionnaire(createDto);
   }
 
