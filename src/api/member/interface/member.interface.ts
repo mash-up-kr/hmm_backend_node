@@ -1,5 +1,5 @@
 export interface IMember {
-  kakaoId: number;
+  kakaoId: string;
   name: string;
   thumbnailImageUrl: string;
 }
