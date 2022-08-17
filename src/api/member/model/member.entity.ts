@@ -10,4 +10,7 @@ export class Member {
 
   @Column()
   name: string;
+
+  @Column()
+  thumbnailImageUrl: string;
 }
