@@ -51,7 +51,7 @@ export class MemberService {
     });
 
     return {
-      accessToken: accessToken,
+      jwt: accessToken,
     };
   }
 }

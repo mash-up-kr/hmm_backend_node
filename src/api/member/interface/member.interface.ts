@@ -5,5 +5,5 @@ export interface IMember {
 }
 
 export interface IToken {
-  accessToken: string;
+  jwt: string;
 }
