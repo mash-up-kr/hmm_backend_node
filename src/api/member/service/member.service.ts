@@ -31,6 +31,7 @@ export class MemberService {
     member = new Member();
     member.kakaoId = kakaoData.kakaoId;
     member.name = kakaoData.name;
+    member.thumbnailImageUrl = kakaoData.thumbnailImageUrl;
     member = await this.memberRepository.save(member);
 
     //기본 그룹 생성

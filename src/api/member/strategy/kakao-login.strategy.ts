@@ -19,7 +19,8 @@ export class KaKaoStrategy {
 
     return {
       kakaoId: kakaoLoginData.data.id,
-      name: kakaoLoginData.data.kakao_account.profile.nickname,
+      name: kakaoLoginData.data.properties.nickname,
+      thumbnailImageUrl: kakaoLoginData.data.properties.thumbnail_image,
     };
   }
 }
