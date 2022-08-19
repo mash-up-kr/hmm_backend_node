@@ -19,7 +19,7 @@ export class QuestionnaireController {
   }
 
   @Get('/details')
-  async getAllDDetail() {
+  async getAllDetail() {
     return await this.questionnaireService.findAllDetail();
   }
 
