@@ -68,15 +68,30 @@ export class QuestionnaireService {
           returnDetails.push(await this.detailEntityRepository.save(detail));
         }
       }
-
-      await this.answerCompleteQuestionnaire(list);
     }
 
     return returnDetails;
   }
 
-  answerCompleteQuestionnaire(list: QuestionnaireListEntity): void {
-    list.isCompleted = true;
-    this.listEntityRepository.save(list);
+  async completeQuestionnaire(
+    listId: number,
+  ): Promise<QuestionnaireListEntity | undefined> {
+    try {
+      const list: QuestionnaireListEntity | null = await this.findListById(
+        listId,
+      );
+
+      if (!list) {
+        // TO DO: 추후 에러처리 필요
+        // TO DO: DeepPartial 문제가 생겨서 일단 해놨고 추후 제대로 찾아서 처리 예정
+        console.log('error');
+      } else {
+        list.isCompleted = true;
+        return await this.listEntityRepository.save(list);
+      }
+    } catch (e) {
+      // TO DO: 추후 에러처리 필요
+      console.log(e);
+    }
   }
 }

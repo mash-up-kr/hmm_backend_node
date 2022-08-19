@@ -1,7 +1,8 @@
-import { Body, Controller, Get, Param, Patch } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
 import { QuestionnaireService } from '../service/questionnaire.service';
 import { QuestionnaireAnswerCreationDto } from '../model/questionnaire-answer-creation-dto';
 import { QuestionnaireDetailEntity } from '../model/questionnaire-detail.entity';
+import { QuestionnaireListEntity } from '../model/questionnaire-list.entity';
 
 @Controller('questionnaire')
 export class QuestionnaireController {
@@ -25,5 +26,12 @@ export class QuestionnaireController {
     answerCreationDto: QuestionnaireAnswerCreationDto[],
   ): Promise<QuestionnaireDetailEntity[]> {
     return await this.questionnaireService.putAnswer(listId, answerCreationDto);
+  }
+
+  @Post('/:listId')
+  async completeQuestionnaire(
+    listId: number,
+  ): Promise<QuestionnaireListEntity | undefined> {
+    return await this.questionnaireService.completeQuestionnaire(listId);
   }
 }
