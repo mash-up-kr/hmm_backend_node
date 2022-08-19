@@ -39,12 +39,12 @@ export class QuestionnaireService {
     const details: QuestionnaireDetailEntity[] = createDto.details;
     const list: QuestionnaireListEntity = new QuestionnaireListEntity();
 
-    const from_member: Member | null = await this.findMemberById(
+    const fromMember: Member | null = await this.findMemberById(
       createDto.fromId,
     ); // 나중에 로그인에서 보내주는 user 로 변경
-    const to_member: Member | null = await this.findMemberById(createDto.toId);
+    const toMember: Member | null = await this.findMemberById(createDto.toId);
 
-    if (!from_member || !to_member) {
+    if (!fromMember || !toMember) {
       // 에러처리 추후에 수정 필요
       throw new HttpException(
         {
@@ -54,8 +54,8 @@ export class QuestionnaireService {
         HttpStatus.BAD_REQUEST,
       );
     } else {
-      list.from = from_member;
-      list.to = to_member;
+      list.from = fromMember;
+      list.to = toMember;
       list.isCompleted = false;
 
       const saved_list: QuestionnaireListEntity | null =
