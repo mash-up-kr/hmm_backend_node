@@ -43,7 +43,7 @@ export class QuestionnaireService {
   // 답변 생성
   async putAnswer(
     listId: number,
-    createAnswerDto: QuestionnaireAnswerCreationDto[],
+    answerCreationDto: QuestionnaireAnswerCreationDto[],
   ): Promise<QuestionnaireDetailEntity[]> {
     // 답변 받은 질문 목록 저장
     const returnDetails: QuestionnaireDetailEntity[] = [];
@@ -55,7 +55,7 @@ export class QuestionnaireService {
       // TO DO: 에러처리 필요
       console.log('error');
     } else {
-      for (const answer of createAnswerDto) {
+      for (const answer of answerCreationDto) {
         const detail: QuestionnaireDetailEntity | null =
           await this.findDetailById(answer.questionId);
 

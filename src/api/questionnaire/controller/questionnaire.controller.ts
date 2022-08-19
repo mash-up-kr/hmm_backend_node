@@ -22,8 +22,8 @@ export class QuestionnaireController {
   async putAnswer(
     @Param('listId') listId: number,
     @Body()
-    createAnswerDto: QuestionnaireAnswerCreationDto[],
+    answerCreationDto: QuestionnaireAnswerCreationDto[],
   ): Promise<QuestionnaireDetailEntity[]> {
-    return await this.questionnaireService.putAnswer(listId, createAnswerDto);
+    return await this.questionnaireService.putAnswer(listId, answerCreationDto);
   }
 }
