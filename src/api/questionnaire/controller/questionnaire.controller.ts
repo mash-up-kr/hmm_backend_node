@@ -17,14 +17,4 @@ export class QuestionnaireController {
   async createQuestionnaire(@Body() createDto: CreationQuestionnaireDto) {
     return await this.questionnaireService.createQuestionnaire(createDto);
   }
-
-  // @Get('/details')
-  // async getAllDetail() {
-  //   return await this.questionnaireService.findAllDetail();
-  // }
-  //
-  // @Post('/details')
-  // async createDetail(@Body() createDetailDto: CreateQuestionnaireDetailDto) {
-  //   return await this.questionnaireService.createDetail(createDetailDto);
-  // }
 }
