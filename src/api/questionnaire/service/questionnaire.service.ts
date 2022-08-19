@@ -69,11 +69,14 @@ export class QuestionnaireService {
         }
       }
 
-      // 질문지 답변 완료로 변경
-      list.isCompleted = true;
-      await this.listEntityRepository.save(list);
+      await this.answerCompleteQuestionnaire(list);
     }
 
     return returnDetails;
+  }
+
+  answerCompleteQuestionnaire(list: QuestionnaireListEntity): void {
+    list.isCompleted = true;
+    this.listEntityRepository.save(list);
   }
 }
