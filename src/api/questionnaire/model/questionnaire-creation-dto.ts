@@ -1,7 +1,7 @@
 import { IsArray, IsBoolean, IsNumber } from 'class-validator';
 import { QuestionnaireDetailEntity } from './questionnaire-detail.entity';
 
-export class CreationQuestionnaireDto {
+export class QuestionnaireCreationDto {
   @IsNumber()
   fromId: number;
 

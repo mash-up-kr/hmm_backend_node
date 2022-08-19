@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Post } from '@nestjs/common';
 import { QuestionnaireService } from '../service/questionnaire.service';
 import { CreateQuestionnaireDetailDto } from '../model/create-questionnaire-detail.dto';
-import { CreationQuestionnaireDto } from '../model/creation-questionnaire-dto';
+import { QuestionnaireCreationDto } from '../model/questionnaire-creation-dto';
 
 @Controller('questionnaire')
 export class QuestionnaireController {
@@ -14,7 +14,7 @@ export class QuestionnaireController {
 
   // 질문지 생성
   @Post()
-  async createQuestionnaire(@Body() createDto: CreationQuestionnaireDto) {
+  async createQuestionnaire(@Body() createDto: QuestionnaireCreationDto) {
     return await this.questionnaireService.createQuestionnaire(createDto);
   }
 }

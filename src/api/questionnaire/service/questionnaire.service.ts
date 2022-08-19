@@ -4,7 +4,7 @@ import { QuestionnaireListEntity } from '../model/questionnaire-list.entity';
 import { Repository } from 'typeorm';
 import { QuestionnaireDetailEntity } from '../model/questionnaire-detail.entity';
 import { CreateQuestionnaireDetailDto } from '../model/create-questionnaire-detail.dto';
-import { CreationQuestionnaireDto } from '../model/creation-questionnaire-dto';
+import { QuestionnaireCreationDto } from '../model/questionnaire-creation-dto';
 import { Member } from '../../member/model/member.entity';
 
 @Injectable()
@@ -35,7 +35,7 @@ export class QuestionnaireService {
   }
 
   // response body 미결정..
-  async createQuestionnaire(createDto: CreationQuestionnaireDto) {
+  async createQuestionnaire(createDto: QuestionnaireCreationDto) {
     const details: QuestionnaireDetailEntity[] = createDto.questionnaireDetails;
     const list: QuestionnaireListEntity = new QuestionnaireListEntity();
 
