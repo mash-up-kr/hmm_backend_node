@@ -14,10 +14,10 @@ export class QuestionnaireService {
     private detailEntityRepository: Repository<QuestionnaireDetailEntity>,
   ) {}
 
-  findDetailById(detail_id: number): Promise<QuestionnaireDetailEntity | null> {
+  findDetailById(detailId: number): Promise<QuestionnaireDetailEntity | null> {
     return this.detailEntityRepository.findOne({
       where: {
-        id: detail_id,
+        id: detailId,
       },
     });
   }
@@ -44,7 +44,7 @@ export class QuestionnaireService {
     createAnswerDto: CreateQuestionnaireAnswerDto[],
   ): Promise<QuestionnaireDetailEntity[]> {
     // 답변 받은 질문 목록 저장
-    const return_details: QuestionnaireDetailEntity[] = [];
+    const returnDetails: QuestionnaireDetailEntity[] = [];
     const list: QuestionnaireListEntity | null = await this.findListById(
       listId,
     );
@@ -63,7 +63,7 @@ export class QuestionnaireService {
         } else {
           // 답변 수정
           detail.friendAnswer = answer.friendAnswer;
-          return_details.push(await this.detailEntityRepository.save(detail));
+          returnDetails.push(await this.detailEntityRepository.save(detail));
         }
       }
 
@@ -72,6 +72,6 @@ export class QuestionnaireService {
       await this.listEntityRepository.save(list);
     }
 
-    return return_details;
+    return returnDetails;
   }
 }
