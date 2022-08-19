@@ -18,8 +18,8 @@ export class QuestionnaireService {
     private memberRepository: Repository<Member>,
   ) {}
 
-  findMemberById(id: number): Promise<Member | null> {
-    return this.memberRepository.findOne({
+  async findMemberById(id: number): Promise<Member | null> {
+    return await this.memberRepository.findOne({
       where: {
         id: id,
       },
