@@ -58,13 +58,13 @@ export class QuestionnaireService {
       list.to = toMember;
       list.isCompleted = false;
 
-      const saved_list: QuestionnaireListEntity | null =
+      const savedList: QuestionnaireListEntity | null =
         await this.listEntityRepository.save(list);
       details.forEach((detail) => {
-        detail.questionList = saved_list;
+        detail.questionList = savedList;
       });
 
-      if (!saved_list) {
+      if (!savedList) {
         // 에러 처리 필요
         console.log('error');
       } else {
