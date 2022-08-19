@@ -83,7 +83,7 @@ export class QuestionnaireService {
 
       if (!list) {
         // TO DO: 추후 에러처리 필요
-        // TO DO: DeepPartial 문제가 생겨서 일단 해놨고 추후 제대로 찾아서 처리 예정
+        // TO DO: DeepPartial 문제가 생겨서 일단 해놨고 추후 제대로 찾아서 처리 예정..
         console.log('error');
       } else {
         list.isCompleted = true;

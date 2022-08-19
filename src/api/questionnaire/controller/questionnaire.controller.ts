@@ -28,9 +28,10 @@ export class QuestionnaireController {
     return await this.questionnaireService.putAnswer(listId, answerCreationDto);
   }
 
-  @Post('/:listId')
+  // 답변 완료로 표시
+  @Patch('/complete/:listId')
   async completeQuestionnaire(
-    listId: number,
+    @Param('listId') listId: number,
   ): Promise<QuestionnaireListEntity | undefined> {
     return await this.questionnaireService.completeQuestionnaire(listId);
   }
