@@ -1,5 +1,4 @@
 import { IsArray, IsBoolean, IsNumber } from 'class-validator';
-import { CreateQuestionnaireDetailDto } from './create-questionnaire-detail.dto';
 import { QuestionnaireDetailEntity } from './questionnaire-detail.entity';
 
 export class CreateQuestionnaireDto {
@@ -13,5 +12,5 @@ export class CreateQuestionnaireDto {
   isCompleted: boolean;
 
   @IsArray()
-  details: QuestionnaireDetailEntity[];
+  questionnaireDetails: QuestionnaireDetailEntity[];
 }

@@ -36,7 +36,7 @@ export class QuestionnaireService {
 
   // response body 미결정..
   async createQuestionnaire(createDto: CreateQuestionnaireDto) {
-    const details: QuestionnaireDetailEntity[] = createDto.details;
+    const details: QuestionnaireDetailEntity[] = createDto.questionnaireDetails;
     const list: QuestionnaireListEntity = new QuestionnaireListEntity();
 
     const fromMember: Member | null = await this.findMemberById(
