@@ -14,16 +14,18 @@ export class QuestionnaireService {
     private detailEntityRepository: Repository<QuestionnaireDetailEntity>,
   ) {}
 
-  findDetailById(detailId: number): Promise<QuestionnaireDetailEntity | null> {
-    return this.detailEntityRepository.findOne({
+  async findDetailById(
+    detailId: number,
+  ): Promise<QuestionnaireDetailEntity | null> {
+    return await this.detailEntityRepository.findOne({
       where: {
         id: detailId,
       },
     });
   }
 
-  findListById(listId: number): Promise<QuestionnaireListEntity | null> {
-    return this.listEntityRepository.findOne({
+  async findListById(listId: number): Promise<QuestionnaireListEntity | null> {
+    return await this.listEntityRepository.findOne({
       where: {
         id: listId,
       },
