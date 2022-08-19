@@ -1,6 +1,6 @@
 import { IsNumber, IsString } from 'class-validator';
 
-export class CreateQuestionnaireAnswerDto {
+export class QuestionnaireAnswerCreationDto {
   @IsNumber()
   questionId: number;
 

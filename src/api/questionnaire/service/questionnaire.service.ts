@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { QuestionnaireListEntity } from '../model/questionnaire-list.entity';
 import { Repository } from 'typeorm';
 import { QuestionnaireDetailEntity } from '../model/questionnaire-detail.entity';
-import { CreateQuestionnaireAnswerDto } from '../model/createQuestionnaireAnswer.dto';
+import { QuestionnaireAnswerCreationDto } from '../model/questionnaire-answer-creation-dto';
 
 @Injectable()
 export class QuestionnaireService {
@@ -43,7 +43,7 @@ export class QuestionnaireService {
   // 답변 생성
   async putAnswer(
     listId: number,
-    createAnswerDto: CreateQuestionnaireAnswerDto[],
+    createAnswerDto: QuestionnaireAnswerCreationDto[],
   ): Promise<QuestionnaireDetailEntity[]> {
     // 답변 받은 질문 목록 저장
     const returnDetails: QuestionnaireDetailEntity[] = [];
@@ -52,7 +52,7 @@ export class QuestionnaireService {
     );
 
     if (!list) {
-      // 에러처리 필요
+      // TO DO: 에러처리 필요
       console.log('error');
     } else {
       for (const answer of createAnswerDto) {
@@ -60,7 +60,7 @@ export class QuestionnaireService {
           await this.findDetailById(answer.questionId);
 
         if (!detail) {
-          // 에러처리 필요
+          // TO DO: 에러처리 필요
           console.log('error');
         } else {
           // 답변 수정
