@@ -12,7 +12,9 @@ export class FriendListEntity {
   @PrimaryGeneratedColumn({ name: 'id', comment: '친구목록 ID' })
   id: number;
 
-  @ManyToOne(() => FriendGroupEntity, (groupEntity) => groupEntity.id)
+  @ManyToOne(() => FriendGroupEntity, (groupEntity) => groupEntity.id, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'friendGroupId', referencedColumnName: 'id' })
   group: FriendGroupEntity;
 
