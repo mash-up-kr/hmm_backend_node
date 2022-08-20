@@ -4,6 +4,7 @@ import {
   Column,
   ManyToOne,
   JoinColumn,
+  CreateDateColumn,
 } from 'typeorm';
 import { QuestionnaireListEntity } from './questionnaire-list.entity';
 
@@ -23,9 +24,15 @@ export class QuestionnaireDetailEntity {
   @Column()
   question: string;
 
-  @Column()
+  @Column({ nullable: true })
   myAnswer: string;
 
-  @Column()
+  @Column({ nullable: true })
   friendAnswer: string;
+
+  @CreateDateColumn({
+    type: 'timestamp',
+    default: () => 'CURRENT_TIMESTAMP(6)',
+  })
+  createdAt: Date;
 }
