@@ -5,7 +5,7 @@ export class FriendListResponse {
 }
 
 export type FriendInfo = {
+  id: number;
   name: string;
   thumbnailImageUrl: string;
-  kakaoId: string;
 };

@@ -41,9 +41,9 @@ export class FriendListService {
     });
     return friends.map((friend) => {
       return {
+        id: friend.id,
         name: friend.name,
         thumbnailImageUrl: friend.thumbnailImageUrl,
-        kakaoId: friend.kakaoId,
       };
     });
   }
