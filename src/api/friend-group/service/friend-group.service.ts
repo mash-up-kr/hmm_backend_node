@@ -3,39 +3,44 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { FriendGroupEntity } from '../model/friend-group.entity';
 import { Repository } from 'typeorm';
 import { FriendGroupDto } from '../model/friend-group.dto';
+import { FriendGroupResponse } from '../model/friend-group.response';
+import { FriendListEntity } from '../../friend-list/model/friend-list.entity';
 
 @Injectable()
 export class FriendGroupService {
   constructor(
     @InjectRepository(FriendGroupEntity)
-    private repository: Repository<FriendGroupEntity>,
+    private friendGroupEntityRepository: Repository<FriendGroupEntity>,
+    @InjectRepository(FriendListEntity)
+    private friendListEntityRepository: Repository<FriendListEntity>,
   ) {}
 
-  async findAll(): Promise<FriendGroupEntity[]> {
-    const result = await this.repository.find();
-    // TODO :  못찾았으면 어찌할지?
-    if (!result) {
-      throw new Error('cannot find data');
-    }
-    return result;
-  }
-
-  async findOne(id: number): Promise<FriendGroupEntity | null> {
-    return await this.repository.findOneBy({ id });
-  }
-
-  async remove(id: string): Promise<void> {
-    await this.repository.delete(id);
+  async findAllGroupsBy(memberId: number): Promise<FriendGroupResponse[]> {
+    const groups = await this.friendGroupEntityRepository.findBy({ memberId });
+    return Promise.all(
+      groups.map(async (group) => {
+        const groupMemberCount = await this.friendListEntityRepository.countBy({
+          groupId: group.id,
+        });
+        return {
+          groupId: group.id,
+          groupName: group.name,
+          groupMemberCount,
+        };
+      }),
+    );
   }
 
   async createGroup(dto: FriendGroupDto): Promise<number> {
     await this.assertDuplicatedGroup(dto);
-    const { id } = await this.repository.save(dto);
+    const { id } = await this.friendGroupEntityRepository.save(dto);
     return id;
   }
 
   private async assertDuplicatedGroup({ memberId, name }: FriendGroupDto) {
-    const existedGroups = await this.repository.findBy({ memberId });
+    const existedGroups = await this.friendGroupEntityRepository.findBy({
+      memberId,
+    });
     const duplicatedGroup = existedGroups.find((group) => group.name === name);
     if (duplicatedGroup) {
       throw new BadRequestException(
