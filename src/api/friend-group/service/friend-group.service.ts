@@ -34,11 +34,12 @@ export class FriendGroupService {
     return id;
   }
 
-  private async assertDuplicatedGroup({ name }: FriendGroupDto) {
-    const existedGroups = await this.repository.findBy({ name: name });
-    if (existedGroups.length !== 0) {
+  private async assertDuplicatedGroup({ memberId, name }: FriendGroupDto) {
+    const existedGroups = await this.repository.findBy({ memberId });
+    const duplicatedGroup = existedGroups.find((group) => group.name === name);
+    if (duplicatedGroup) {
       throw new BadRequestException(
-        '이미 존재하는 이름을 그룹명으로 사용할 수 없습니다.',
+        '이미 존재하는 그룹명을 사용할 수 없습니다.',
       );
     }
   }
