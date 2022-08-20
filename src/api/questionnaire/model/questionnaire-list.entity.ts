@@ -21,7 +21,7 @@ export class QuestionnaireListEntity {
     onDelete: 'SET NULL',
   })
   @JoinColumn({ name: 'toFriendId', referencedColumnName: 'id' })
-  to: Member;
+  to: FriendListEntity;
 
   @Column()
   isCompleted: boolean;

@@ -7,6 +7,7 @@ import { CreateQuestionnaireDetailDto } from '../model/create-questionnaire-deta
 import { QuestionnaireCreationDto } from '../model/questionnaire-creation-dto';
 import { Member } from '../../member/model/member.entity';
 import { Request } from 'express';
+import { FriendListEntity } from '../../friend-list/model/friend-list.entity';
 
 @Injectable()
 export class QuestionnaireService {
@@ -17,10 +18,20 @@ export class QuestionnaireService {
     private detailEntityRepository: Repository<QuestionnaireDetailEntity>,
     @InjectRepository(Member)
     private memberRepository: Repository<Member>,
+    @InjectRepository(FriendListEntity)
+    private friendListRepository: Repository<FriendListEntity>,
   ) {}
 
   async findMemberById(id: number): Promise<Member | null> {
     return await this.memberRepository.findOne({
+      where: {
+        id: id,
+      },
+    });
+  }
+
+  async findFriendById(id: number): Promise<FriendListEntity | null> {
+    return await this.friendListRepository.findOne({
       where: {
         id: id,
       },
@@ -44,9 +55,11 @@ export class QuestionnaireService {
     const userId = user.id;
 
     const fromMember: Member | null = await this.findMemberById(userId);
-    const toMember: Member | null = await this.findMemberById(createDto.toId);
+    const toFriend: FriendListEntity | null = await this.findFriendById(
+      createDto.toFriendId,
+    );
 
-    if (!fromMember || !toMember) {
+    if (!fromMember || !toFriend) {
       // 에러처리 추후에 수정 필요
       throw new HttpException(
         {
@@ -57,7 +70,7 @@ export class QuestionnaireService {
       );
     } else {
       list.from = fromMember;
-      list.to = toMember;
+      list.to = toFriend;
       list.isCompleted = false;
 
       const savedList: QuestionnaireListEntity | null =
