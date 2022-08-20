@@ -15,8 +15,12 @@ export class FriendListEntity {
   @ManyToOne(() => FriendGroupEntity, (groupEntity) => groupEntity.id, {
     onDelete: 'CASCADE',
   })
-  @JoinColumn({ name: 'friendGroupId', referencedColumnName: 'id' })
-  group: FriendGroupEntity;
+  @JoinColumn({ name: 'groupId', referencedColumnName: 'id' })
+  @Column({
+    name: 'groupId',
+    comment: '속한 그룹의 유니크한 ID 값',
+  })
+  groupId: number;
 
   @Column({
     name: 'name',
@@ -35,4 +39,10 @@ export class FriendListEntity {
     comment: '가입유무',
   })
   isMember: boolean;
+
+  @Column({
+    name: 'thumbnailImageUrl',
+    comment: '프로필이미지 url',
+  })
+  thumbnailImageUrl: string;
 }

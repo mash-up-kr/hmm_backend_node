@@ -1,19 +1,14 @@
 import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 import { FriendGroupService } from '../service/friend-group.service';
-import { FriendGroupEntity } from '../model/friend-group.entity';
 import { FriendGroupDto } from '../model/friend-group.dto';
 import { JwtAuthGuard } from '../../member/guard/jwt.guard';
+import { FriendGroupResponse } from '../model/friend-group.response';
 
 type User = { user: { id: number } };
 
 @Controller('groups')
 export class FriendGroupController {
   constructor(private readonly groupService: FriendGroupService) {}
-
-  @Get()
-  async getGroup(): Promise<FriendGroupEntity[]> {
-    return await this.groupService.findAll();
-  }
 
   /**
    * @description 회원이 생성하는 그룹
@@ -29,6 +24,17 @@ export class FriendGroupController {
     @Body() name: Pick<FriendGroupDto, 'name'>,
   ): Promise<number> {
     const memberId = req.user.id;
+    //TODO: {savedGroupId: number} 이런식으로 객체로 return 하는게 더 좋을듯.
     return await this.groupService.createGroup({ memberId, ...name });
+  }
+
+  /**
+   * @description 회원이 가지고있는 그룹의 목록을 조회한다.
+   * - 각 그룹에 속한 친구의 수를 같이 내려준다.
+   */
+  @UseGuards(JwtAuthGuard)
+  @Get()
+  async getGroups(@Req() req: User): Promise<FriendGroupResponse[]> {
+    return await this.groupService.findAllGroupsBy(req.user.id);
   }
 }
