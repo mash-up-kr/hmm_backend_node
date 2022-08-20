@@ -9,6 +9,7 @@ import { QuestionnaireCreationDto } from '../model/questionnaire-creation-dto';
 import { Member } from '../../member/model/member.entity';
 import { Request } from 'express';
 import { FriendListEntity } from '../../friend-list/model/friend-list.entity';
+import { QuestionnaireCreationResponse } from '../model/questionnaire-creation.response';
 
 @Injectable()
 export class QuestionnaireService {
@@ -133,7 +134,10 @@ export class QuestionnaireService {
   }
 
   // response body 미결정..
-  async createQuestionnaire(createDto: QuestionnaireCreationDto, req: Request) {
+  async createQuestionnaire(
+    createDto: QuestionnaireCreationDto,
+    req: Request,
+  ): Promise<QuestionnaireCreationResponse> {
     const details: QuestionnaireDetailEntity[] = createDto.questionnaireDetails;
 
     const user: any = req.user;
@@ -162,7 +166,10 @@ export class QuestionnaireService {
         details.forEach((detail) => {
           detail.questionList = existentList;
         });
-        return await this.detailEntityRepository.save(details);
+        await this.detailEntityRepository.save(details);
+        return {
+          isSuccess: true,
+        };
       } else {
         // 새 리스트 만들기
         const list: QuestionnaireListEntity = new QuestionnaireListEntity();
@@ -179,8 +186,14 @@ export class QuestionnaireService {
         if (!savedList) {
           // 에러 처리 필요
           console.log('error');
+          return {
+            isSuccess: false,
+          };
         } else {
-          return await this.detailEntityRepository.save(details);
+          await this.detailEntityRepository.save(details);
+          return {
+            isSuccess: true,
+          };
         }
       }
     }

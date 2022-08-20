@@ -14,6 +14,7 @@ import { QuestionnaireCreationDto } from '../model/questionnaire-creation-dto';
 import { QuestionnaireAnswerCreationDto } from '../model/questionnaire-answer-creation-dto';
 import { JwtAuthGuard } from '../../member/guard/jwt.guard';
 import { QuestionnaireListEntity } from '../model/questionnaire-list.entity';
+import { QuestionnaireCreationResponse } from '../model/questionnaire-creation.response';
 
 @Controller('questionnaire')
 export class QuestionnaireController {
@@ -30,7 +31,7 @@ export class QuestionnaireController {
   async createQuestionnaire(
     @Body() createDto: QuestionnaireCreationDto,
     @Req() req: Request,
-  ) {
+  ): Promise<QuestionnaireCreationResponse> {
     return await this.questionnaireService.createQuestionnaire(createDto, req);
   }
 
