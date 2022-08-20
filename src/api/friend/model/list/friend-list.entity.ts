@@ -5,7 +5,7 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { FriendGroupEntity } from '../../friend-group/model/friend-group.entity';
+import { FriendGroupEntity } from '../../../friend-group/model/friend-group.entity';
 
 @Entity({ name: 'FriendList' })
 export class FriendListEntity {
@@ -45,4 +45,11 @@ export class FriendListEntity {
     comment: '프로필이미지 url',
   })
   thumbnailImageUrl: string;
+
+  @Column({
+    name: 'kakaoId',
+    comment: '카카오톡에서 부여하는 고유한 id',
+    type: 'bigint',
+  })
+  kakaoId: string;
 }

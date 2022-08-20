@@ -8,8 +8,8 @@ import { CreateQuestionnaireDetailDto } from '../model/create-questionnaire-deta
 import { QuestionnaireCreationDto } from '../model/questionnaire-creation-dto';
 import { Member } from '../../member/model/member.entity';
 import { Request } from 'express';
-import { FriendListEntity } from '../../friend-list/model/friend-list.entity';
 import { QuestionnaireCreationResponse } from '../model/questionnaire-creation.response';
+import { FriendListEntity } from '../../friend/model/list/friend-list.entity';
 
 @Injectable()
 export class QuestionnaireService {

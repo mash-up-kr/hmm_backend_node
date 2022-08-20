@@ -8,6 +8,7 @@ import { FriendGroupModule } from './api/friend-group/friend-group.module';
 import { QuestionnaireModule } from './api/questionnaire/questionnaire.module';
 import { APP_FILTER, APP_PIPE } from '@nestjs/core';
 import { ClassValidatorFilter } from './common/filter/class-validator.filter';
+import { FriendModule } from './api/friend/friend.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { ClassValidatorFilter } from './common/filter/class-validator.filter';
     MemberModule,
     FriendGroupModule,
     QuestionnaireModule,
+    FriendModule,
   ],
   providers: [
     {

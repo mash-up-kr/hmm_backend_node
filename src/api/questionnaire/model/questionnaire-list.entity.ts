@@ -6,7 +6,7 @@ import {
   ManyToOne,
   JoinColumn,
 } from 'typeorm';
-import { FriendListEntity } from '../../friend-list/model/friend-list.entity';
+import { FriendListEntity } from '../../friend/model/list/friend-list.entity';
 
 @Entity({ name: 'QuestionnaireList' })
 export class QuestionnaireListEntity {

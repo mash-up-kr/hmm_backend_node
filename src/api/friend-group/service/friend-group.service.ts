@@ -8,7 +8,7 @@ import { FriendGroupEntity } from '../model/friend-group.entity';
 import { Repository } from 'typeorm';
 import { FriendGroupDto } from '../model/friend-group.dto';
 import { FriendGroupResponse } from '../model/friend-group.response';
-import { FriendListEntity } from '../../friend-list/model/friend-list.entity';
+import { FriendListEntity } from '../../friend/model/list/friend-list.entity';
 import { FriendGroupSaveResponse } from '../model/friend-group-save.response';
 
 @Injectable()
