@@ -29,7 +29,6 @@ export class FriendGroupController {
     @Body() name: Pick<FriendGroupDto, 'name'>,
   ): Promise<number> {
     const memberId = req.user.id;
-    console.log(memberId);
     return await this.groupService.createGroup({ memberId, ...name });
   }
 }
