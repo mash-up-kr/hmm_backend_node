@@ -1,7 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FriendGroupEntity } from '../model/friend-group.entity';
 import { Repository } from 'typeorm';
+import { FriendGroupDto } from '../model/friend-group.dto';
 
 @Injectable()
 export class FriendGroupService {
@@ -27,7 +28,19 @@ export class FriendGroupService {
     await this.repository.delete(id);
   }
 
-  async set(info: FriendGroupEntity) {
-    await this.repository.save(info);
+  async createGroup(dto: FriendGroupDto): Promise<number> {
+    await this.assertDuplicatedGroup(dto);
+    const { id } = await this.repository.save(dto);
+    return id;
+  }
+
+  private async assertDuplicatedGroup({ memberId, name }: FriendGroupDto) {
+    const existedGroups = await this.repository.findBy({ memberId });
+    const duplicatedGroup = existedGroups.find((group) => group.name === name);
+    if (duplicatedGroup) {
+      throw new BadRequestException(
+        '이미 존재하는 그룹명을 사용할 수 없습니다.',
+      );
+    }
   }
 }
