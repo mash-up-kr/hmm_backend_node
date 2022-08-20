@@ -25,7 +25,7 @@ export class FriendGroupController {
   ): Promise<number> {
     const memberId = req.user.id;
     //TODO: {savedGroupId: number} 이런식으로 객체로 return 하는게 더 좋을듯.
-    return await this.groupService.createGroup({ memberId: 1, ...name });
+    return await this.groupService.createGroup({ memberId, ...name });
   }
 
   /**
