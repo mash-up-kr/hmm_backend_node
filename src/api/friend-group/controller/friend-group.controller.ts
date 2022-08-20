@@ -6,7 +6,7 @@ import { JwtAuthGuard } from '../../member/guard/jwt.guard';
 
 type User = { user: { id: number } };
 
-@Controller('group')
+@Controller('groups')
 export class FriendGroupController {
   constructor(private readonly groupService: FriendGroupService) {}
 
@@ -23,7 +23,7 @@ export class FriendGroupController {
    * @return number
    */
   @UseGuards(JwtAuthGuard)
-  @Post()
+  @Post('group')
   async createGroup(
     @Req() req: User,
     @Body() name: Pick<FriendGroupDto, 'name'>,
