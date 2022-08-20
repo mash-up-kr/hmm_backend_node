@@ -22,7 +22,7 @@ export class KakaoAuthGuard implements CanActivate {
       kakaoToken,
     );
 
-    if (!kakaoToken) throw new UnauthorizedException();
+    if (!kakaoData) throw new UnauthorizedException();
 
     request.body = { kakaoData: kakaoData };
 
