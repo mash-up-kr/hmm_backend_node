@@ -1,9 +1,12 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 import { FriendGroupService } from '../service/friend-group.service';
 import { FriendGroupEntity } from '../model/friend-group.entity';
 import { FriendGroupDto } from '../model/friend-group.dto';
+import { JwtAuthGuard } from '../../member/guard/jwt.guard';
 
-@Controller('group')
+type User = { user: { id: number } };
+
+@Controller('groups')
 export class FriendGroupController {
   constructor(private readonly groupService: FriendGroupService) {}
 
@@ -12,7 +15,6 @@ export class FriendGroupController {
     return await this.groupService.findAll();
   }
 
-  @Post()
   /**
    * @description 회원이 생성하는 그룹
    * - 비회원은 그룹을 만들 수 없다. (키 값이 되는 정보가 없음)
@@ -20,7 +22,13 @@ export class FriendGroupController {
    * - 저장완료된 그룹의 id 를 리턴한다.
    * @return number
    */
-  async createGroup(@Body() groupDto: FriendGroupDto): Promise<number> {
-    return await this.groupService.createGroup(groupDto);
+  @UseGuards(JwtAuthGuard)
+  @Post('group')
+  async createGroup(
+    @Req() req: User,
+    @Body() name: Pick<FriendGroupDto, 'name'>,
+  ): Promise<number> {
+    const memberId = req.user.id;
+    return await this.groupService.createGroup({ memberId, ...name });
   }
 }
