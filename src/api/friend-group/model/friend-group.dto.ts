@@ -17,9 +17,9 @@ export class FriendGroupDto {
 }
 
 function assertGroupName(params: TransformFnParams) {
-  if (params.value === '전체') {
+  if (params.value === '모든 친구들') {
     throw new BadRequestException(
-      '그룹명에는 전체라는 이름을 사용할 수 없습니다.',
+      '그룹명에는 [ 모든 친구들 ] 이름을 사용할 수 없습니다.',
     );
   }
 }
