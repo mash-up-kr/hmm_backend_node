@@ -22,10 +22,16 @@ export class FriendGroupService {
         const groupMemberCount = await this.friendListEntityRepository.countBy({
           groupId: group.id,
         });
+        const friendsInGroup = await this.friendListEntityRepository.findBy({
+          groupId: group.id,
+        });
         return {
           groupId: group.id,
           groupName: group.name,
           groupMemberCount,
+          thumbnailImageUrls: friendsInGroup.map(
+            (friend) => friend.thumbnailImageUrl,
+          ),
         };
       }),
     );

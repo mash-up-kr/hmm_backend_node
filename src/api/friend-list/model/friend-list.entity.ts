@@ -39,4 +39,10 @@ export class FriendListEntity {
     comment: '가입유무',
   })
   isMember: boolean;
+
+  @Column({
+    name: 'thumbnailImageUrl',
+    comment: '프로필이미지 url',
+  })
+  thumbnailImageUrl: string;
 }
