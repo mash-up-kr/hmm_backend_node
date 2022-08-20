@@ -5,9 +5,12 @@ export class Member {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
-  kakaoId: number;
+  @Column({ type: 'bigint' })
+  kakaoId: string;
 
   @Column()
   name: string;
+
+  @Column()
+  thumbnailImageUrl: string;
 }

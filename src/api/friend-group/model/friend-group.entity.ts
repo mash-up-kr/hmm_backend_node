@@ -12,9 +12,13 @@ export class FriendGroupEntity {
   @PrimaryGeneratedColumn({ name: 'id', comment: '그룹 ID' })
   id: number;
 
-  @ManyToOne(() => Member, (member) => member.id)
+  @ManyToOne(() => Member, (member) => member.id, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'memberId', referencedColumnName: 'id' })
-  member: Member;
+  @Column({
+    name: 'memberId',
+    comment: '가입회원의 id',
+  })
+  memberId: number;
 
   @Column({
     name: 'name',

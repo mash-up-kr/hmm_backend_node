@@ -6,19 +6,22 @@ import {
   ManyToOne,
   JoinColumn,
 } from 'typeorm';
+import { FriendListEntity } from '../../friend-list/model/friend-list.entity';
 
 @Entity({ name: 'QuestionnaireList' })
 export class QuestionnaireListEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => Member, (member) => member.id)
+  @ManyToOne(() => Member, (member) => member.id, { onDelete: 'SET NULL' })
   @JoinColumn({ name: 'fromMemberId', referencedColumnName: 'id' })
   from: Member;
 
-  @ManyToOne(() => Member, (member) => member.id)
-  @JoinColumn({ name: 'toMemberId', referencedColumnName: 'id' })
-  to: Member;
+  @ManyToOne(() => FriendListEntity, (friend) => friend.id, {
+    onDelete: 'SET NULL',
+  })
+  @JoinColumn({ name: 'toFriendId', referencedColumnName: 'id' })
+  to: FriendListEntity;
 
   @Column()
   isCompleted: boolean;
