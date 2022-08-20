@@ -14,13 +14,15 @@ export class KakaoAuthGuard implements CanActivate {
 
   public async canActivate(context: ExecutionContext): Promise<boolean> {
     const request: Request = context.switchToHttp().getRequest();
-    const token: string = <string>request.body.accessToken;
+    const kakaoToken: string = <string>request.body.kakaoToken;
 
-    if (!token) throw new UnauthorizedException();
+    if (!kakaoToken) throw new UnauthorizedException();
 
-    const kakaoData: IMember = await this.kakao.ValidateTokenAndDecode(token);
+    const kakaoData: IMember = await this.kakao.ValidateTokenAndDecode(
+      kakaoToken,
+    );
 
-    if (!kakaoData) throw new UnauthorizedException();
+    if (!kakaoToken) throw new UnauthorizedException();
 
     request.body = { kakaoData: kakaoData };
 

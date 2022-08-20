@@ -26,7 +26,7 @@ export class MemberController {
 
   // 친구목록 불러오기
   // @UseGuards(JwtAuthGuard)
-  // @Get('member/friend-list')
+  // @Get('members/friend-list')
   // async getFriendList(@Request() req: any) {
   //   return req.user.id;
   // }
