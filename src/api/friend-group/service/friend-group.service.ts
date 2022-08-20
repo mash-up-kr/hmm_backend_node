@@ -1,10 +1,15 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FriendGroupEntity } from '../model/friend-group.entity';
 import { Repository } from 'typeorm';
 import { FriendGroupDto } from '../model/friend-group.dto';
 import { FriendGroupResponse } from '../model/friend-group.response';
 import { FriendListEntity } from '../../friend-list/model/friend-list.entity';
+import { FriendGroupSaveResponse } from '../model/friend-group-save.response';
 
 @Injectable()
 export class FriendGroupService {
@@ -37,10 +42,13 @@ export class FriendGroupService {
     );
   }
 
-  async createGroup(dto: FriendGroupDto): Promise<number> {
+  async createGroup(dto: FriendGroupDto): Promise<FriendGroupSaveResponse> {
     await this.assertDuplicatedGroup(dto);
     const { id } = await this.friendGroupEntityRepository.save(dto);
-    return id;
+    if (!id) {
+      throw new InternalServerErrorException('저장에 실패했습니다.');
+    }
+    return { isSuccess: true };
   }
 
   private async assertDuplicatedGroup({ memberId, name }: FriendGroupDto) {
