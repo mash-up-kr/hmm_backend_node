@@ -40,7 +40,11 @@ export class FriendListService {
       groupId,
     });
     return friends.map((friend) => {
-      return { name: friend.name, thumbnailImageUrl: friend.thumbnailImageUrl };
+      return {
+        name: friend.name,
+        thumbnailImageUrl: friend.thumbnailImageUrl,
+        kakaoId: friend.kakaoId,
+      };
     });
   }
 }
