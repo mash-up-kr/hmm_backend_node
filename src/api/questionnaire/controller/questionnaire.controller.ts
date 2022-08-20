@@ -15,6 +15,7 @@ import { QuestionnaireAnswerCreationDto } from '../model/questionnaire-answer-cr
 import { JwtAuthGuard } from '../../member/guard/jwt.guard';
 import { QuestionnaireListEntity } from '../model/questionnaire-list.entity';
 import { QuestionnaireCreationResponse } from '../model/questionnaire-creation.response';
+import { QuestionnaireAnswerResponse } from '../model/questionnaire-answer.response';
 
 @Controller('questionnaire')
 export class QuestionnaireController {
@@ -41,8 +42,19 @@ export class QuestionnaireController {
     @Param('listId') listId: number,
     @Body()
     answerCreationDto: QuestionnaireAnswerCreationDto[],
-  ): Promise<QuestionnaireListEntity | undefined> {
-    await this.questionnaireService.putAnswer(listId, answerCreationDto);
-    return await this.questionnaireService.completeQuestionnaire(listId);
+  ): Promise<QuestionnaireAnswerResponse> {
+    try {
+      await this.questionnaireService.putAnswer(listId, answerCreationDto);
+      await this.questionnaireService.completeQuestionnaire(listId);
+
+      return {
+        isSuccess: true,
+      };
+    } catch (e) {
+      console.log(e);
+      return {
+        isSuccess: false,
+      };
+    }
   }
 }
