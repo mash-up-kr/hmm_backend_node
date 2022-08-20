@@ -4,6 +4,7 @@ import { Member } from '../model/member.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
   IMember,
+  IRecommendedFriends,
   IRecommendedFriendsParams,
   IToken,
 } from '../interface/member.interface';
@@ -64,23 +65,27 @@ export class MemberService {
     kakaoToken: string,
     recommendedFriendsParams: IRecommendedFriendsParams,
   ): Promise<any> {
+    const recommendedFriends: IRecommendedFriends[] = [];
     const apiUrl = `https://kapi.kakao.com/v1/api/talk/friends`;
     const header = {
       'Content-type': 'application/x-www-form-urlencoded;charset=utf-8',
       'Authorization': `Bearer ${kakaoToken}`,
     };
 
-    console.log(apiUrl);
-    console.log(recommendedFriendsParams);
-
     const friendsData: any = await this.http
       .get(apiUrl, {
         headers: header,
-        data: { offset: 1, limit: 10 },
+        params: recommendedFriendsParams,
       })
       .toPromise();
 
-    console.log(friendsData);
+    friendsData.data.elements.forEach((element: IRecommendedFriends) => {
+      recommendedFriends.push({
+        profile_nickname: element.profile_nickname,
+        profile_thumbnail_image: element.profile_thumbnail_image,
+      });
+    });
+
+    return recommendedFriends;
   }
-  //Partial<IMember>
 }

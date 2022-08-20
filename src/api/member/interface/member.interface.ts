@@ -14,3 +14,8 @@ export interface IRecommendedFriendsParams {
   order?: string;
   friend_order?: string;
 }
+
+export interface IRecommendedFriends {
+  profile_nickname: string;
+  profile_thumbnail_image: string;
+}
