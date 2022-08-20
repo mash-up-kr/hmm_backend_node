@@ -7,3 +7,10 @@ export interface IMember {
 export interface IToken {
   jwt: string;
 }
+
+export interface IRecommendedFriendsParams {
+  offset?: number;
+  limit?: number;
+  order?: string;
+  friend_order?: string;
+}
