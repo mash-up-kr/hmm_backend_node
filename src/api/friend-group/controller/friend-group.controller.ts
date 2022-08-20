@@ -3,6 +3,7 @@ import { FriendGroupService } from '../service/friend-group.service';
 import { FriendGroupDto } from '../model/friend-group.dto';
 import { JwtAuthGuard } from '../../member/guard/jwt.guard';
 import { FriendGroupResponse } from '../model/friend-group.response';
+import { FriendGroupSaveResponse } from '../model/friend-group-save.response';
 
 type User = { user: { id: number } };
 
@@ -22,9 +23,8 @@ export class FriendGroupController {
   async createGroup(
     @Req() req: User,
     @Body() name: Pick<FriendGroupDto, 'name'>,
-  ): Promise<number> {
+  ): Promise<FriendGroupSaveResponse> {
     const memberId = req.user.id;
-    //TODO: {savedGroupId: number} 이런식으로 객체로 return 하는게 더 좋을듯.
     return await this.groupService.createGroup({ memberId, ...name });
   }
 
