@@ -22,19 +22,9 @@ export class MemberController {
   @Get('members/recommended-friends')
   async getFriendList(
     @Body() requestingKakaoApiDto: requestingKakaoApiDto,
-    @Query('offset') offset?: number,
-    @Query('limit') limit?: number,
-    @Query('order') order?: string,
-    @Query('friend_order') friend_order?: string,
   ): Promise<Partial<IMember>> {
     return await this.memberService.getRecommendedFriends(
       requestingKakaoApiDto.kakaoToken,
-      {
-        offset: Number(offset),
-        limit: Number(limit),
-        order,
-        friend_order,
-      },
     );
   }
 }

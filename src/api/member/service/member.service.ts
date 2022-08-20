@@ -5,20 +5,25 @@ import { InjectRepository } from '@nestjs/typeorm';
 import {
   IMember,
   IRecommendedFriends,
-  IRecommendedFriendsParams,
   IToken,
 } from '../interface/member.interface';
 import { FriendGroupEntity } from 'src/api/friend-group/model/friend-group.entity';
 import { JwtService } from '@nestjs/jwt';
 import { HttpService } from '@nestjs/axios';
+import { FriendListEntity } from 'src/api/friend/model/list/friend-list.entity';
 
 @Injectable()
 export class MemberService {
   constructor(
     @InjectRepository(Member)
     private readonly memberRepository: Repository<Member>,
+
     @InjectRepository(FriendGroupEntity)
     private readonly friendGroupRepository: Repository<FriendGroupEntity>,
+
+    @InjectRepository(FriendListEntity)
+    private readonly friendListRepository: Repository<FriendListEntity>,
+
     private readonly jwtService: JwtService,
 
     private readonly http: HttpService,
@@ -61,31 +66,81 @@ export class MemberService {
     };
   }
 
-  async getRecommendedFriends(
+  async getRecommendedFriends(kakaoToken: string): Promise<any> {
+    const kakaoData: any = await this.sendRecommendedFriendsApiToKakao(
+      kakaoToken,
+      0,
+    );
+    const totalFriendsCount: number = kakaoData.data.total_count;
+
+    const totalFriendsList: IRecommendedFriends[] =
+      await this.getTotalFriendsList(kakaoToken, totalFriendsCount);
+
+    return totalFriendsList;
+  }
+
+  private async sendRecommendedFriendsApiToKakao(
     kakaoToken: string,
-    recommendedFriendsParams: IRecommendedFriendsParams,
+    offset: number,
+    limit = 100,
   ): Promise<any> {
-    const recommendedFriends: IRecommendedFriends[] = [];
     const apiUrl = `https://kapi.kakao.com/v1/api/talk/friends`;
     const header = {
       'Content-type': 'application/x-www-form-urlencoded;charset=utf-8',
       'Authorization': `Bearer ${kakaoToken}`,
     };
 
-    const friendsData: any = await this.http
+    return await this.http
       .get(apiUrl, {
         headers: header,
-        params: recommendedFriendsParams,
+        params: { offset, limit },
       })
       .toPromise();
+  }
 
-    friendsData.data.elements.forEach((element: IRecommendedFriends) => {
-      recommendedFriends.push({
-        profile_nickname: element.profile_nickname,
-        profile_thumbnail_image: element.profile_thumbnail_image,
+  private async getTotalFriendsList(
+    kakaoToken: string,
+    totalFriendsCount: number,
+  ): Promise<IRecommendedFriends[]> {
+    const friendsList: IRecommendedFriends[] = [];
+    let offset = 0;
+
+    for (; totalFriendsCount / 2 + 1; ) {
+      const kakaoData: any = await this.sendRecommendedFriendsApiToKakao(
+        kakaoToken,
+        offset,
+      );
+
+      kakaoData.data.elements.map((element: IRecommendedFriends) =>
+        friendsList.push({
+          id: element.id,
+          profile_nickname: element.profile_nickname,
+          profile_thumbnail_image: element.profile_thumbnail_image,
+        }),
+      );
+
+      offset = offset + 100;
+    }
+
+    const filteredFriendsList: IRecommendedFriends[] = friendsList.filter(
+      async (friend) => !(await this.isRegisteredFriend(friend)),
+    );
+
+    return filteredFriendsList;
+  }
+
+  private async isRegisteredFriend(
+    friend: IRecommendedFriends,
+  ): Promise<boolean> {
+    const selectedFriend: FriendListEntity | null =
+      await this.friendListRepository.findOne({
+        where: { kakaoId: friend.id },
       });
-    });
 
-    return recommendedFriends;
+    if (selectedFriend) {
+      return true;
+    }
+
+    return false;
   }
 }

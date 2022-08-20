@@ -16,6 +16,7 @@ export interface IRecommendedFriendsParams {
 }
 
 export interface IRecommendedFriends {
+  id: string;
   profile_nickname: string;
   profile_thumbnail_image: string;
 }
