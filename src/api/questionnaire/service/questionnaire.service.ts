@@ -6,6 +6,7 @@ import { QuestionnaireDetailEntity } from '../model/questionnaire-detail.entity'
 import { CreateQuestionnaireDetailDto } from '../model/create-questionnaire-detail.dto';
 import { QuestionnaireCreationDto } from '../model/questionnaire-creation-dto';
 import { Member } from '../../member/model/member.entity';
+import { Request } from 'express';
 
 @Injectable()
 export class QuestionnaireService {
@@ -35,13 +36,14 @@ export class QuestionnaireService {
   }
 
   // response body 미결정..
-  async createQuestionnaire(createDto: QuestionnaireCreationDto) {
+  async createQuestionnaire(createDto: QuestionnaireCreationDto, req: Request) {
     const details: QuestionnaireDetailEntity[] = createDto.questionnaireDetails;
     const list: QuestionnaireListEntity = new QuestionnaireListEntity();
 
-    const fromMember: Member | null = await this.findMemberById(
-      createDto.fromId,
-    ); // 나중에 로그인에서 보내주는 user 로 변경
+    const user: any = req.user;
+    const userId = user.id;
+
+    const fromMember: Member | null = await this.findMemberById(userId);
     const toMember: Member | null = await this.findMemberById(createDto.toId);
 
     if (!fromMember || !toMember) {

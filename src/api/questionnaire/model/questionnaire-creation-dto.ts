@@ -3,9 +3,6 @@ import { QuestionnaireDetailEntity } from './questionnaire-detail.entity';
 
 export class QuestionnaireCreationDto {
   @IsNumber()
-  fromId: number;
-
-  @IsNumber()
   toId: number;
 
   @IsBoolean()

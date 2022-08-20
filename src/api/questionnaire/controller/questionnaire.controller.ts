@@ -1,7 +1,9 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
+import { Request } from 'express';
 import { QuestionnaireService } from '../service/questionnaire.service';
 import { CreateQuestionnaireDetailDto } from '../model/create-questionnaire-detail.dto';
 import { QuestionnaireCreationDto } from '../model/questionnaire-creation-dto';
+import { JwtAuthGuard } from '../../member/guard/jwt.guard';
 
 @Controller('questionnaire')
 export class QuestionnaireController {
@@ -13,8 +15,12 @@ export class QuestionnaireController {
   }
 
   // 질문지 생성
+  @UseGuards(JwtAuthGuard)
   @Post()
-  async createQuestionnaire(@Body() createDto: QuestionnaireCreationDto) {
-    return await this.questionnaireService.createQuestionnaire(createDto);
+  async createQuestionnaire(
+    @Body() createDto: QuestionnaireCreationDto,
+    @Req() req: Request,
+  ) {
+    return await this.questionnaireService.createQuestionnaire(createDto, req);
   }
 }
