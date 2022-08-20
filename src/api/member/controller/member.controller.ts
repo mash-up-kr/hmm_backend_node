@@ -1,12 +1,4 @@
-import {
-  Controller,
-  Post,
-  UseGuards,
-  Body,
-  Get,
-  Request,
-  Query,
-} from '@nestjs/common';
+import { Controller, Post, UseGuards, Body, Get, Query } from '@nestjs/common';
 import { JwtAuthGuard } from '../guard/jwt.guard';
 import { KakaoAuthGuard } from '../guard/kakao-login.guard';
 import { IMember, IToken } from '../interface/member.interface';
