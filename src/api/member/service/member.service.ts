@@ -11,10 +11,8 @@ export class MemberService {
   constructor(
     @InjectRepository(Member)
     private readonly memberRepository: Repository<Member>,
-
     @InjectRepository(FriendGroupEntity)
     private readonly friendGroupRepository: Repository<FriendGroupEntity>,
-
     private readonly jwtService: JwtService,
   ) {}
 
@@ -37,7 +35,7 @@ export class MemberService {
     //기본 그룹 생성
     const defaultFriendGroup: FriendGroupEntity = new FriendGroupEntity();
     defaultFriendGroup.name = '전체';
-    defaultFriendGroup.member = member;
+    defaultFriendGroup.memberId = member.id;
     await this.friendGroupRepository.save(defaultFriendGroup);
 
     return member;

@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FriendGroupEntity } from '../model/friend-group.entity';
 import { Repository } from 'typeorm';
+import { FriendGroupDto } from '../model/friend-group.dto';
 
 @Injectable()
 export class FriendGroupService {
@@ -27,7 +28,8 @@ export class FriendGroupService {
     await this.repository.delete(id);
   }
 
-  async set(info: FriendGroupEntity) {
-    await this.repository.save(info);
+  async createGroup(dto: FriendGroupDto): Promise<number> {
+    const { id } = await this.repository.save(dto);
+    return id;
   }
 }
