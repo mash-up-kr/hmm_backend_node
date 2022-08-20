@@ -15,6 +15,7 @@ export class QuestionnaireDetailEntity {
   @ManyToOne(
     () => QuestionnaireListEntity,
     (questionnaireList) => questionnaireList.id,
+    { onDelete: 'CASCADE' },
   )
   @JoinColumn({ name: 'questionListId', referencedColumnName: 'id' })
   questionList: QuestionnaireListEntity;
