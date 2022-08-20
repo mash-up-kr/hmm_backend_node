@@ -1,7 +1,6 @@
 import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 import { Request } from 'express';
 import { QuestionnaireService } from '../service/questionnaire.service';
-import { CreateQuestionnaireDetailDto } from '../model/create-questionnaire-detail.dto';
 import { QuestionnaireCreationDto } from '../model/questionnaire-creation-dto';
 import { JwtAuthGuard } from '../../member/guard/jwt.guard';
 
