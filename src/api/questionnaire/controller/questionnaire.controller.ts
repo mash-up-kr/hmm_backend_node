@@ -1,7 +1,6 @@
-import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, Put } from '@nestjs/common';
 import { QuestionnaireService } from '../service/questionnaire.service';
 import { QuestionnaireAnswerCreationDto } from '../model/questionnaire-answer-creation-dto';
-import { QuestionnaireDetailEntity } from '../model/questionnaire-detail.entity';
 import { QuestionnaireListEntity } from '../model/questionnaire-list.entity';
 
 @Controller('questionnaire')
@@ -18,21 +17,14 @@ export class QuestionnaireController {
     return await this.questionnaireService.findAllDetail();
   }
 
-  // 답변 생성
-  @Patch('/:listId')
-  async putAnswer(
+  // 친구 답변 저장 & 질문지 답변 완료로 표시
+  @Put('/:listId')
+  async createFriendAnswer(
     @Param('listId') listId: number,
     @Body()
     answerCreationDto: QuestionnaireAnswerCreationDto[],
-  ): Promise<QuestionnaireDetailEntity[]> {
-    return await this.questionnaireService.putAnswer(listId, answerCreationDto);
-  }
-
-  // 답변 완료로 표시
-  @Patch('/complete/:listId')
-  async completeQuestionnaire(
-    @Param('listId') listId: number,
   ): Promise<QuestionnaireListEntity | undefined> {
+    await this.questionnaireService.putAnswer(listId, answerCreationDto);
     return await this.questionnaireService.completeQuestionnaire(listId);
   }
 }
