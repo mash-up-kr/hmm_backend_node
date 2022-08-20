@@ -38,6 +38,18 @@ export class QuestionnaireService {
     });
   }
 
+  async findQnListByToAndFrom(
+    toFriend: FriendListEntity,
+    fromMember: Member,
+  ): Promise<QuestionnaireListEntity | null> {
+    return await this.listEntityRepository.findOne({
+      where: {
+        from: fromMember,
+        to: toFriend,
+      },
+    });
+  }
+
   async findAllList() {
     return await this.listEntityRepository.find();
   }
@@ -49,7 +61,6 @@ export class QuestionnaireService {
   // response body 미결정..
   async createQuestionnaire(createDto: QuestionnaireCreationDto, req: Request) {
     const details: QuestionnaireDetailEntity[] = createDto.questionnaireDetails;
-    const list: QuestionnaireListEntity = new QuestionnaireListEntity();
 
     const user: any = req.user;
     const userId = user.id;
@@ -69,21 +80,34 @@ export class QuestionnaireService {
         HttpStatus.BAD_REQUEST,
       );
     } else {
-      list.from = fromMember;
-      list.to = toFriend;
-      list.isCompleted = false;
+      const existentList: QuestionnaireListEntity | null =
+        await this.findQnListByToAndFrom(toFriend, fromMember);
 
-      const savedList: QuestionnaireListEntity | null =
-        await this.listEntityRepository.save(list);
-      details.forEach((detail) => {
-        detail.questionList = savedList;
-      });
-
-      if (!savedList) {
-        // 에러 처리 필요
-        console.log('error');
-      } else {
+      if (existentList) {
+        // 이미 있는 리스트에 질문 추가하기
+        details.forEach((detail) => {
+          detail.questionList = existentList;
+        });
         return await this.detailEntityRepository.save(details);
+      } else {
+        // 새 리스트 만들기
+        const list: QuestionnaireListEntity = new QuestionnaireListEntity();
+        list.from = fromMember;
+        list.to = toFriend;
+        list.isCompleted = false;
+
+        const savedList: QuestionnaireListEntity | null =
+          await this.listEntityRepository.save(list);
+        details.forEach((detail) => {
+          detail.questionList = savedList;
+        });
+
+        if (!savedList) {
+          // 에러 처리 필요
+          console.log('error');
+        } else {
+          return await this.detailEntityRepository.save(details);
+        }
       }
     }
   }
