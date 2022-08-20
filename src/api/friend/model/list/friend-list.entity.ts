@@ -5,7 +5,7 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { FriendGroupEntity } from '../../friend-group/model/friend-group.entity';
+import { FriendGroupEntity } from '../../../friend-group/model/friend-group.entity';
 
 @Entity({ name: 'FriendList' })
 export class FriendListEntity {
