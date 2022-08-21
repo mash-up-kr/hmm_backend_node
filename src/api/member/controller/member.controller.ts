@@ -1,14 +1,8 @@
-import {
-  Controller,
-  Post,
-  UseGuards,
-  Body,
-  Get,
-  Request,
-} from '@nestjs/common';
+import { Controller, Post, UseGuards, Body, Get, Query } from '@nestjs/common';
 import { JwtAuthGuard } from '../guard/jwt.guard';
 import { KakaoAuthGuard } from '../guard/kakao-login.guard';
 import { IMember, IToken } from '../interface/member.interface';
+import { requestingKakaoApiDto } from '../model/requesting-kakao-api.dto';
 import { Member } from '../model/member.entity';
 import { MemberService } from '../service/member.service';
 
@@ -24,10 +18,13 @@ export class MemberController {
     return await this.memberService.login(member);
   }
 
-  // 친구목록 불러오기
-  // @UseGuards(JwtAuthGuard)
-  // @Get('member/friend-list')
-  // async getFriendList(@Request() req: any) {
-  //   return req.user.id;
-  // }
+  @UseGuards(JwtAuthGuard)
+  @Get('members/recommended-friends')
+  async getFriendList(
+    @Body() requestingKakaoApiDto: requestingKakaoApiDto,
+  ): Promise<Partial<IMember>> {
+    return await this.memberService.getRecommendedFriends(
+      requestingKakaoApiDto.kakaoToken,
+    );
+  }
 }
