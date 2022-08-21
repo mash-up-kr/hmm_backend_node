@@ -11,7 +11,6 @@ import { FriendGroupEntity } from 'src/api/friend-group/model/friend-group.entit
 import { JwtService } from '@nestjs/jwt';
 import { HttpService } from '@nestjs/axios';
 import { FriendListEntity } from 'src/api/friend/model/list/friend-list.entity';
-import { ConnectableObservable } from 'rxjs';
 
 @Injectable()
 export class MemberService {
@@ -106,6 +105,7 @@ export class MemberService {
     const friendsList: IRecommendedFriends[] = [];
     let offset = 0;
 
+    //카톡 모든 친구들 가져오기
     for (let i = 0; i < totalFriendsCount / 100 + 1; i++) {
       const kakaoData: any = await this.sendRecommendedFriendsApiToKakao(
         kakaoToken,
@@ -123,6 +123,7 @@ export class MemberService {
       offset = offset + 100;
     }
 
+    //친구 리스트에 있는 친구들 제외
     const filteredFriendsList: IRecommendedFriends[] = (
       await Promise.all(
         friendsList.map(async (friend) => ({
@@ -134,6 +135,10 @@ export class MemberService {
       .filter((v) => v.include)
       .map((result) => result.value);
 
+    //클라에 최대 200명만 내려주기
+    if (filteredFriendsList.length > 200) {
+      return filteredFriendsList.slice(0, 200);
+    }
     return filteredFriendsList;
   }
 
