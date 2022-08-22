@@ -66,7 +66,9 @@ export class MemberService {
     };
   }
 
-  async getRecommendedFriends(kakaoToken: string): Promise<any> {
+  async getRecommendedFriends(
+    kakaoToken: string,
+  ): Promise<IRecommendedFriends[]> {
     const kakaoData: any = await this.sendRecommendedFriendsApiToKakao(
       kakaoToken,
       0,

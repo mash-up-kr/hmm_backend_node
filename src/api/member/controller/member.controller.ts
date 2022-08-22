@@ -1,7 +1,11 @@
 import { Controller, Post, UseGuards, Body, Get, Query } from '@nestjs/common';
 import { JwtAuthGuard } from '../guard/jwt.guard';
 import { KakaoAuthGuard } from '../guard/kakao-login.guard';
-import { IMember, IToken } from '../interface/member.interface';
+import {
+  IMember,
+  IRecommendedFriends,
+  IToken,
+} from '../interface/member.interface';
 import { requestingKakaoApiDto } from '../model/requesting-kakao-api.dto';
 import { Member } from '../model/member.entity';
 import { MemberService } from '../service/member.service';
@@ -22,7 +26,7 @@ export class MemberController {
   @Get('members/recommended-friends')
   async getFriendList(
     @Body() requestingKakaoApiDto: requestingKakaoApiDto,
-  ): Promise<Partial<IMember>> {
+  ): Promise<IRecommendedFriends[]> {
     return await this.memberService.getRecommendedFriends(
       requestingKakaoApiDto.kakaoToken,
     );
