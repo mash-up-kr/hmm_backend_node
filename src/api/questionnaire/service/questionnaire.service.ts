@@ -133,7 +133,6 @@ export class QuestionnaireService {
     }
   }
 
-  // response body 미결정..
   async createQuestionnaire(
     createDto: QuestionnaireCreationDto,
     req: Request,
