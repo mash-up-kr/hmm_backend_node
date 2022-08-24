@@ -47,7 +47,7 @@ export class MemberService {
 
     //기본 그룹 생성
     const defaultFriendGroup: FriendGroupEntity = new FriendGroupEntity();
-    defaultFriendGroup.name = '전체';
+    defaultFriendGroup.name = '모든 친구들';
     defaultFriendGroup.memberId = member.id;
     await this.friendGroupRepository.save(defaultFriendGroup);
 
@@ -66,7 +66,9 @@ export class MemberService {
     };
   }
 
-  async getRecommendedFriends(kakaoToken: string): Promise<any> {
+  async getRecommendedFriends(
+    kakaoToken: string,
+  ): Promise<IRecommendedFriends[]> {
     const kakaoData: any = await this.sendRecommendedFriendsApiToKakao(
       kakaoToken,
       0,
