@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { QuestionnaireListEntity } from '../model/questionnaire-list.entity';
-import { Repository } from 'typeorm';
+import { IsNull, Repository } from 'typeorm';
 import { QuestionnaireDetailEntity } from '../model/questionnaire-detail.entity';
 import { QuestionnaireAnswerCreationDto } from '../model/questionnaire-answer-creation-dto';
 import { QuestionnaireCreationDto } from '../model/questionnaire-creation-dto';
@@ -15,6 +15,7 @@ import { Request } from 'express';
 import { QuestionnaireCreationResponse } from '../model/questionnaire-creation.response';
 import { FriendListEntity } from '../../friend/model/list/friend-list.entity';
 import { QuestionnaireReadResponse } from '../model/questionnaire-read.response';
+import { isNull } from 'util';
 
 @Injectable()
 export class QuestionnaireService {
@@ -45,6 +46,20 @@ export class QuestionnaireService {
     return await this.detailEntityRepository.find({
       where: {
         questionList: list,
+      },
+      order: {
+        createdStep: 'DESC',
+      },
+    });
+  }
+
+  async findDetailByListAnswerNull(
+    list: QuestionnaireListEntity,
+  ): Promise<QuestionnaireDetailEntity[] | null> {
+    return await this.detailEntityRepository.find({
+      where: {
+        questionList: list,
+        friendAnswer: IsNull(),
       },
       order: {
         createdStep: 'DESC',
@@ -221,8 +236,15 @@ export class QuestionnaireService {
     if (!questionnaireList) {
       throw new BadRequestException('존재하지 않는 질문지입니다.');
     }
-    const questionnaireDetails: QuestionnaireDetailEntity[] | null =
-      await this.findDetailByList(questionnaireList);
+
+    let questionnaireDetails: QuestionnaireDetailEntity[] | null;
+    if (aspect === 'answer') {
+      questionnaireDetails = await this.findDetailByListAnswerNull(
+        questionnaireList,
+      );
+    } else {
+      questionnaireDetails = await this.findDetailByList(questionnaireList);
+    }
     if (!questionnaireDetails) {
       throw new BadRequestException('존재하지 않는 질문지입니다.');
     }
@@ -233,7 +255,7 @@ export class QuestionnaireService {
       response.questionId = detail.id;
       response.question = detail.question;
 
-      if (aspect === 'my') {
+      if (aspect === 'my' || aspect === 'answer') {
         response.answer = detail.myAnswer;
       } else {
         response.answer = detail.friendAnswer;
