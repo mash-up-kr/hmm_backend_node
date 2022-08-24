@@ -74,10 +74,6 @@ export class QuestionnaireService {
     return await this.listEntityRepository.find();
   }
 
-  async findAllDetail() {
-    return await this.detailEntityRepository.find();
-  }
-
   // 답변 생성
   async putAnswer(
     listId: number,
@@ -196,9 +192,5 @@ export class QuestionnaireService {
         }
       }
     }
-  }
-
-  async createDetail(createDetailDto: CreateQuestionnaireDetailDto) {
-    return await this.detailEntityRepository.save(createDetailDto);
   }
 }
