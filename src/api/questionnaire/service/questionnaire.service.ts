@@ -1,15 +1,20 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { QuestionnaireListEntity } from '../model/questionnaire-list.entity';
 import { Repository } from 'typeorm';
 import { QuestionnaireDetailEntity } from '../model/questionnaire-detail.entity';
 import { QuestionnaireAnswerCreationDto } from '../model/questionnaire-answer-creation-dto';
-import { CreateQuestionnaireDetailDto } from '../model/create-questionnaire-detail.dto';
 import { QuestionnaireCreationDto } from '../model/questionnaire-creation-dto';
 import { Member } from '../../member/model/member.entity';
 import { Request } from 'express';
 import { QuestionnaireCreationResponse } from '../model/questionnaire-creation.response';
 import { FriendListEntity } from '../../friend/model/list/friend-list.entity';
+import { QuestionnaireReadResponse } from '../model/questionnaire-read.response';
 
 @Injectable()
 export class QuestionnaireService {
@@ -30,6 +35,19 @@ export class QuestionnaireService {
     return await this.detailEntityRepository.findOne({
       where: {
         id: detailId,
+      },
+    });
+  }
+
+  async findDetailByList(
+    list: QuestionnaireListEntity,
+  ): Promise<QuestionnaireDetailEntity[] | null> {
+    return await this.detailEntityRepository.find({
+      where: {
+        questionList: list,
+      },
+      order: {
+        createdStep: 'DESC',
       },
     });
   }
@@ -160,8 +178,11 @@ export class QuestionnaireService {
         // 이미 있는 리스트에 질문 추가하기
         details.forEach((detail) => {
           detail.questionList = existentList;
+          detail.createdStep = existentList.createdStep + 1;
         });
         await this.detailEntityRepository.save(details);
+        existentList.createdStep += 1;
+        await this.listEntityRepository.save(existentList);
         return {
           isSuccess: true,
         };
@@ -192,5 +213,35 @@ export class QuestionnaireService {
         }
       }
     }
+  }
+
+  async readQuestionnaire(listId: number, aspect: string) {
+    const questionnaireList: QuestionnaireListEntity | null =
+      await this.findListById(listId);
+    if (!questionnaireList) {
+      throw new BadRequestException('존재하지 않는 질문지입니다.');
+    }
+    const questionnaireDetails: QuestionnaireDetailEntity[] | null =
+      await this.findDetailByList(questionnaireList);
+    if (!questionnaireDetails) {
+      throw new BadRequestException('존재하지 않는 질문지입니다.');
+    }
+
+    const responses: QuestionnaireReadResponse[] = [];
+    for (const detail of questionnaireDetails) {
+      const response = new QuestionnaireReadResponse();
+      response.questionId = detail.id;
+      response.question = detail.question;
+
+      if (aspect === 'my') {
+        response.answer = detail.myAnswer;
+      } else {
+        response.answer = detail.friendAnswer;
+      }
+
+      responses.push(response);
+    }
+
+    return responses;
   }
 }

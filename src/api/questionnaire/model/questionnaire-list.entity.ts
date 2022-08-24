@@ -25,4 +25,7 @@ export class QuestionnaireListEntity {
 
   @Column()
   isCompleted: boolean;
+
+  @Column({ default: 1 })
+  createdStep: number;
 }

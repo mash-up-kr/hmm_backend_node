@@ -35,4 +35,7 @@ export class QuestionnaireDetailEntity {
     default: () => 'CURRENT_TIMESTAMP(6)',
   })
   createdAt: Date;
+
+  @Column({ default: 1 })
+  createdStep: number;
 }
