@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { QuestionnaireListEntity } from '../model/questionnaire-list.entity';
-import { IsNull, Repository } from 'typeorm';
+import { IsNull, Not, Repository } from 'typeorm';
 import { QuestionnaireDetailEntity } from '../model/questionnaire-detail.entity';
 import { QuestionnaireAnswerCreationDto } from '../model/questionnaire-answer-creation-dto';
 import { QuestionnaireCreationDto } from '../model/questionnaire-creation-dto';
@@ -15,7 +15,6 @@ import { Request } from 'express';
 import { QuestionnaireCreationResponse } from '../model/questionnaire-creation.response';
 import { FriendListEntity } from '../../friend/model/list/friend-list.entity';
 import { QuestionnaireReadResponse } from '../model/questionnaire-read.response';
-import { isNull } from 'util';
 
 @Injectable()
 export class QuestionnaireService {
@@ -40,12 +39,13 @@ export class QuestionnaireService {
     });
   }
 
-  async findDetailByList(
+  async findDetailByListAnswerNotNull(
     list: QuestionnaireListEntity,
   ): Promise<QuestionnaireDetailEntity[] | null> {
     return await this.detailEntityRepository.find({
       where: {
         questionList: list,
+        friendAnswer: Not(IsNull()),
       },
       order: {
         createdStep: 'DESC',
@@ -243,7 +243,9 @@ export class QuestionnaireService {
         questionnaireList,
       );
     } else {
-      questionnaireDetails = await this.findDetailByList(questionnaireList);
+      questionnaireDetails = await this.findDetailByListAnswerNotNull(
+        questionnaireList,
+      );
     }
     if (!questionnaireDetails) {
       throw new BadRequestException('존재하지 않는 질문지입니다.');
