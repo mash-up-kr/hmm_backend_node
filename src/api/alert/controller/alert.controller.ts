@@ -1,6 +1,16 @@
-import { Controller } from '@nestjs/common';
+import { Controller, Get, Req, UseGuards } from '@nestjs/common';
+import { JwtAuthGuard } from 'src/api/member/guard/jwt.guard';
+import { AlertService } from '../service/alert.service';
 
-@Controller()
+type User = { user: { id: number } };
+
+@Controller('alerts')
 export class AlertController {
-  constructor() {}
+  constructor(private readonly alertService: AlertService) {}
+
+  @UseGuards(JwtAuthGuard)
+  @Get()
+  async getAlerts(@Req() req: User) {
+    return await this.alertService.getAlerts(req.user.id);
+  }
 }

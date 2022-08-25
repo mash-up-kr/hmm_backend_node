@@ -9,6 +9,7 @@ import { QuestionnaireModule } from './api/questionnaire/questionnaire.module';
 import { APP_FILTER, APP_PIPE } from '@nestjs/core';
 import { ClassValidatorFilter } from './common/filter/class-validator.filter';
 import { FriendModule } from './api/friend/friend.module';
+import { AlertModule } from './api/alert/alert.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { FriendModule } from './api/friend/friend.module';
     FriendGroupModule,
     QuestionnaireModule,
     FriendModule,
+    AlertModule,
   ],
   providers: [
     {

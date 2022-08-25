@@ -5,6 +5,7 @@ import { FriendListEntity } from 'src/api/friend/model/list/friend-list.entity';
 import { Member } from 'src/api/member/model/member.entity';
 import { AlertController } from './controller/alert.controller';
 import { AlertService } from './service/alert.service';
+import { AlertEntity } from './model/alert.entity';
 
 @Module({
   controllers: [AlertController],
@@ -13,6 +14,7 @@ import { AlertService } from './service/alert.service';
       QuestionnaireListEntity,
       FriendListEntity,
       Member,
+      AlertEntity,
     ]),
   ],
   providers: [AlertService],

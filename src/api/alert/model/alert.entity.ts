@@ -28,11 +28,11 @@ export class AlertEntity {
     onDelete: 'SET NULL',
   })
   @JoinColumn({ name: 'fromFriendId', referencedColumnName: 'id' })
-  from: FriendListEntity;
+  friend: FriendListEntity;
 
   @ManyToOne(() => Member, (member) => member.id, { onDelete: 'SET NULL' })
   @JoinColumn({ name: 'toMemberId', referencedColumnName: 'id' })
-  to: Member;
+  member: Member;
 
   @ManyToOne(
     () => QuestionnaireListEntity,
@@ -42,5 +42,5 @@ export class AlertEntity {
     },
   )
   @JoinColumn({ name: 'questionnaireListId', referencedColumnName: 'id' })
-  questionnaireListId: QuestionnaireListEntity;
+  questionnaireList: QuestionnaireListEntity;
 }
