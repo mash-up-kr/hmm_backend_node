@@ -9,3 +9,7 @@ export interface IFormattedAlerts {
   questionnaireId: number;
   createdAt: Date;
 }
+
+export interface IAlertExistResponse {
+  alertExistence: boolean;
+}

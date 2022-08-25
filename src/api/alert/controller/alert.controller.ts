@@ -13,4 +13,10 @@ export class AlertController {
   async getAlerts(@Req() req: User) {
     return await this.alertService.getAlerts(req.user.id);
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('/existence')
+  async doesMemberHaveAlert(@Req() req: User) {
+    return await this.alertService.doesMemberHaveAlert(req.user.id);
+  }
 }

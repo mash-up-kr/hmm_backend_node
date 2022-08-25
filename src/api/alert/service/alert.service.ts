@@ -2,7 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Member } from 'src/api/member/model/member.entity';
 import { Repository } from 'typeorm';
-import { IAlertResponse, IFormattedAlerts } from '../interface/alert.interface';
+import {
+  IAlertExistResponse,
+  IAlertResponse,
+  IFormattedAlerts,
+} from '../interface/alert.interface';
 import { AlertEntity } from '../model/alert.entity';
 
 @Injectable()
@@ -25,6 +29,20 @@ export class AlertService {
       completedAnswers: alerts.completedAnswers,
       alertCount: alertCount,
     };
+  }
+
+  async doesMemberHaveAlert(memberId: number): Promise<IAlertExistResponse> {
+    const member: Member = await this.memberepository.findOneByOrFail({
+      id: memberId,
+    });
+    const alert: AlertEntity | null = await this.alertEntityRepository.findOne({
+      where: { member: member },
+    });
+
+    if (alert) {
+      return { alertExistence: true };
+    }
+    return { alertExistence: false };
   }
 
   private async getAlertsByMemberId(memberId: number): Promise<IAlertResponse> {
