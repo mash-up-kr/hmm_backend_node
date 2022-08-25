@@ -1,20 +1,21 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { FriendListResponse } from '../../model/list/friend-list.response';
-import { FriendListEntity } from '../../model/list/friend-list.entity';
-import { FriendGroupEntity } from '../../../friend-group/model/friend-group.entity';
+import { FriendResponse } from '../model/friend.response';
+import { FriendEntity } from '../model/friend.entity';
+import { FriendGroupEntity } from '../../friend-group/model/friend-group.entity';
+import { FriendDto } from '../model/friend.dto';
 
 @Injectable()
-export class FriendListService {
+export class FriendService {
   constructor(
-    @InjectRepository(FriendListEntity)
-    private friendListEntityRepository: Repository<FriendListEntity>,
+    @InjectRepository(FriendEntity)
+    private friendListEntityRepository: Repository<FriendEntity>,
     @InjectRepository(FriendGroupEntity)
     private friendGroupEntityRepository: Repository<FriendGroupEntity>,
   ) {}
 
-  async getFriends(groupId: number): Promise<FriendListResponse> {
+  async getFriends(groupId: number): Promise<FriendResponse> {
     const friendInfo = await this.getFriendInfo(groupId);
     const groupName = await this.getGroupName(groupId);
     return {
@@ -22,6 +23,24 @@ export class FriendListService {
       groupName,
       friendInfo,
     };
+  }
+
+  async setFriend(dto: FriendDto): Promise<number> {
+    const friendEntityForSave = this.getFriendEntityForSave(dto);
+    const { id } = await this.friendListEntityRepository.save(
+      friendEntityForSave,
+    );
+    if (!id) {
+      throw new InternalServerErrorException('저장에 실패했습니다.');
+    }
+    return id;
+  }
+
+  private getFriendEntityForSave(dto: FriendDto) {
+    return {
+      isMember: !!dto.kakaoId,
+      ...dto,
+    } as FriendEntity;
   }
 
   private async getGroupName(groupId: number) {

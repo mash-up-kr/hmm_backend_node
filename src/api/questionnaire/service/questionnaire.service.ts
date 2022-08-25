@@ -13,7 +13,7 @@ import { QuestionnaireCreationDto } from '../model/questionnaire-creation-dto';
 import { Member } from '../../member/model/member.entity';
 import { Request } from 'express';
 import { QuestionnaireCreationResponse } from '../model/questionnaire-creation.response';
-import { FriendListEntity } from '../../friend/model/list/friend-list.entity';
+import { FriendEntity } from '../../friend/model/friend.entity';
 import { QuestionnaireReadResponse } from '../model/questionnaire-read.response';
 
 @Injectable()
@@ -25,8 +25,8 @@ export class QuestionnaireService {
     private detailEntityRepository: Repository<QuestionnaireDetailEntity>,
     @InjectRepository(Member)
     private memberRepository: Repository<Member>,
-    @InjectRepository(FriendListEntity)
-    private friendListRepository: Repository<FriendListEntity>,
+    @InjectRepository(FriendEntity)
+    private friendListRepository: Repository<FriendEntity>,
   ) {}
 
   async findDetailById(
@@ -83,7 +83,7 @@ export class QuestionnaireService {
     });
   }
 
-  async findFriendById(id: number): Promise<FriendListEntity | null> {
+  async findFriendById(id: number): Promise<FriendEntity | null> {
     return await this.friendListRepository.findOne({
       where: {
         id: id,
@@ -92,13 +92,13 @@ export class QuestionnaireService {
   }
 
   async findQnListByToAndFrom(
-    toFriend: FriendListEntity,
+    toFriend: FriendEntity,
     fromMember: Member,
   ): Promise<QuestionnaireListEntity | null> {
     return await this.listEntityRepository.findOne({
       where: {
-        from: fromMember,
-        to: toFriend,
+        from: fromMember.id,
+        to: toFriend.id,
       },
     });
   }
@@ -172,7 +172,7 @@ export class QuestionnaireService {
     const userId = user.id;
 
     const fromMember: Member | null = await this.findMemberById(userId);
-    const toFriend: FriendListEntity | null = await this.findFriendById(
+    const toFriend: FriendEntity | null = await this.findFriendById(
       createDto.toFriendId,
     );
 
@@ -204,8 +204,8 @@ export class QuestionnaireService {
       } else {
         // 새 리스트 만들기
         const list: QuestionnaireListEntity = new QuestionnaireListEntity();
-        list.from = fromMember;
-        list.to = toFriend;
+        list.from = fromMember.id;
+        list.to = toFriend.id;
         list.isCompleted = false;
 
         const savedList: QuestionnaireListEntity | null =
