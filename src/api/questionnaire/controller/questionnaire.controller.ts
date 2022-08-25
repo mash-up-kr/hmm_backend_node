@@ -5,6 +5,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -56,5 +57,14 @@ export class QuestionnaireController {
         isSuccess: false,
       };
     }
+  }
+
+  // 답변
+  @Get(':listId')
+  async readMyAnswer(
+    @Param('listId') listId: number,
+    @Query('aspect') aspect: string,
+  ) {
+    return await this.questionnaireService.readQuestionnaire(listId, aspect);
   }
 }
