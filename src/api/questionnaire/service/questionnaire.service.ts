@@ -226,6 +226,7 @@ export class QuestionnaireService {
       await this.detailEntityRepository.save(details);
 
     existentList.createdStep += 1;
+    existentList.isCompleted = false;
     const questionnaireList: QuestionnaireListEntity | null =
       await this.listEntityRepository.save(existentList);
 
