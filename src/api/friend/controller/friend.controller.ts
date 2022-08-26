@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { FriendService } from '../service/friend.service';
-import { FriendResponse } from '../model/friend.response';
+import { CreatedFriendReponse, FriendResponse } from '../model/friend.response';
 import { FriendDto } from '../model/friend.dto';
 
 @Controller('friend')
@@ -23,7 +23,7 @@ export class FriendController {
    * @param friendDto
    */
   @Post()
-  async setFriend(@Body() friendDto: FriendDto) {
+  async setFriend(@Body() friendDto: FriendDto): Promise<CreatedFriendReponse> {
     return await this.friendListService.setFriend(friendDto);
   }
 }

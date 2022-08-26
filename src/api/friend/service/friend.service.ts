@@ -1,7 +1,7 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { FriendResponse } from '../model/friend.response';
+import { CreatedFriendReponse, FriendResponse } from '../model/friend.response';
 import { FriendEntity } from '../model/friend.entity';
 import { FriendGroupEntity } from '../../friend-group/model/friend-group.entity';
 import { FriendDto } from '../model/friend.dto';
@@ -25,7 +25,7 @@ export class FriendService {
     };
   }
 
-  async setFriend(dto: FriendDto): Promise<number> {
+  async setFriend(dto: FriendDto): Promise<CreatedFriendReponse> {
     const friendEntityForSave = this.getFriendEntityForSave(dto);
     const { id } = await this.friendListEntityRepository.save(
       friendEntityForSave,
@@ -33,7 +33,7 @@ export class FriendService {
     if (!id) {
       throw new InternalServerErrorException('저장에 실패했습니다.');
     }
-    return id;
+    return { friendId: id };
   }
 
   private getFriendEntityForSave(dto: FriendDto) {

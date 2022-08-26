@@ -9,3 +9,7 @@ export type FriendInfo = {
   name: string;
   thumbnailImageUrl: string | null;
 };
+
+export class CreatedFriendReponse {
+  friendId: number;
+}
