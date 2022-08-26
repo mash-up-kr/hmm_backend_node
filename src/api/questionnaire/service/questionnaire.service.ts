@@ -15,6 +15,7 @@ import { Request } from 'express';
 import { QuestionnaireCreationResponse } from '../model/questionnaire-creation.response';
 import { FriendListEntity } from '../../friend/model/list/friend-list.entity';
 import { QuestionnaireReadResponse } from '../model/questionnaire-read.response';
+import { ProfileReadResponse } from '../model/profile-read.response';
 
 @Injectable()
 export class QuestionnaireService {
@@ -230,7 +231,10 @@ export class QuestionnaireService {
     }
   }
 
-  async readQuestionnaire(listId: number, aspect: string) {
+  async readQuestionnaire(
+    listId: number,
+    aspect: string,
+  ): Promise<QuestionnaireReadResponse[]> {
     const questionnaireList: QuestionnaireListEntity | null =
       await this.findListById(listId);
     if (!questionnaireList) {
@@ -267,5 +271,41 @@ export class QuestionnaireService {
     }
 
     return responses;
+  }
+
+  async getProfile(
+    friendId: number,
+    memberId: number,
+  ): Promise<ProfileReadResponse> {
+    const response: ProfileReadResponse = new ProfileReadResponse();
+
+    const friend: FriendListEntity | null = await this.findFriendById(friendId);
+    const member: Member | null = await this.findMemberById(memberId);
+
+    if (!friend || !member) {
+      throw new BadRequestException('존재하지 않는 친구, 계정입니다.');
+    }
+
+    response.profile = friend;
+
+    const questionnaireList: QuestionnaireListEntity | null =
+      await this.findQnListByToAndFrom(friend, member);
+    if (!questionnaireList) {
+      // 질문지를 보낸적 없을 때
+      response.friendAnswer = [];
+      response.myAnswer = [];
+      return response;
+    }
+
+    response.myAnswer = await this.readQuestionnaire(
+      questionnaireList.id,
+      'my',
+    );
+    response.friendAnswer = await this.readQuestionnaire(
+      questionnaireList.id,
+      'friend',
+    );
+
+    return response;
   }
 }
