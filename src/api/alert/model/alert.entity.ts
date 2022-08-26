@@ -1,4 +1,3 @@
-import { FriendListEntity } from 'src/api/friend/model/list/friend-list.entity';
 import { Member } from 'src/api/member/model/member.entity';
 import { QuestionnaireListEntity } from 'src/api/questionnaire/model/questionnaire-list.entity';
 import {
@@ -9,6 +8,7 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { FriendEntity } from '../../friend/model/friend.entity';
 
 @Entity({ name: 'Alert' })
 export class AlertEntity {
@@ -24,11 +24,11 @@ export class AlertEntity {
   })
   createdAt: Date;
 
-  @ManyToOne(() => FriendListEntity, (friend) => friend.id, {
+  @ManyToOne(() => FriendEntity, (friend) => friend.id, {
     onDelete: 'SET NULL',
   })
   @JoinColumn({ name: 'fromFriendId', referencedColumnName: 'id' })
-  friend: FriendListEntity;
+  friend: FriendEntity;
 
   @ManyToOne(() => Member, (member) => member.id, { onDelete: 'SET NULL' })
   @JoinColumn({ name: 'toMemberId', referencedColumnName: 'id' })
