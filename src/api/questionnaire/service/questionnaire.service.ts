@@ -17,6 +17,7 @@ import { QuestionnaireCreationResponse } from '../model/questionnaire-creation.r
 import { FriendEntity } from '../../friend/model/friend.entity';
 import { QuestionnaireReadResponse } from '../model/questionnaire-read.response';
 import { ProfileReadResponse } from '../model/profile-read.response';
+import { QuestionnaireController } from '../controller/questionnaire.controller';
 
 @Injectable()
 export class QuestionnaireService {
@@ -182,16 +183,7 @@ export class QuestionnaireService {
 
     if (existentList) {
       // 이미 있는 리스트에 질문 추가하기
-      details.forEach((detail) => {
-        detail.questionList = existentList;
-        detail.createdStep = existentList.createdStep + 1;
-      });
-      await this.detailEntityRepository.save(details);
-      existentList.createdStep += 1;
-      await this.listEntityRepository.save(existentList);
-      return {
-        isSuccess: true,
-      };
+      await this.createExistQuestionnaire(existentList, details);
     } else {
       // 새 리스트 만들기
       const list: QuestionnaireListEntity = new QuestionnaireListEntity();
@@ -203,17 +195,44 @@ export class QuestionnaireService {
         await this.listEntityRepository.save(list);
       if (!savedList) {
         throw new InternalServerErrorException(
-          '리스트 저장에 오류가 발생했습니다.',
+          '저장하던 중 오류가 발생했습니다.',
         );
       }
+
       details.forEach((detail) => {
         detail.questionList = savedList;
       });
+      if (!(await this.detailEntityRepository.save(details))) {
+        throw new InternalServerErrorException(
+          '저장하던 중 오류가 발생했습니다.',
+        );
+      }
+    }
 
+    return {
+      isSuccess: true,
+    };
+  }
+
+  async createExistQuestionnaire(
+    existentList: QuestionnaireListEntity,
+    details: QuestionnaireDetailEntity[],
+  ): Promise<void> {
+    details.forEach((detail) => {
+      detail.questionList = existentList;
+      detail.createdStep = existentList.createdStep + 1;
+    });
+    const questionnaireDetail: QuestionnaireDetailEntity[] | null =
       await this.detailEntityRepository.save(details);
-      return {
-        isSuccess: true,
-      };
+
+    existentList.createdStep += 1;
+    const questionnaireList: QuestionnaireListEntity | null =
+      await this.listEntityRepository.save(existentList);
+
+    if (!questionnaireList || !questionnaireDetail) {
+      throw new InternalServerErrorException(
+        '저장하는 중 오류가 발생했습니다.',
+      );
     }
   }
 
