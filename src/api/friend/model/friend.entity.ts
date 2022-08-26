@@ -5,10 +5,10 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { FriendGroupEntity } from '../../../friend-group/model/friend-group.entity';
+import { FriendGroupEntity } from '../../friend-group/model/friend-group.entity';
 
 @Entity({ name: 'FriendList' })
-export class FriendListEntity {
+export class FriendEntity {
   @PrimaryGeneratedColumn({ name: 'id', comment: '친구목록 ID' })
   id: number;
 
@@ -43,8 +43,9 @@ export class FriendListEntity {
   @Column({
     name: 'thumbnailImageUrl',
     comment: '프로필이미지 url',
+    nullable: true,
   })
-  thumbnailImageUrl: string;
+  thumbnailImageUrl!: string;
 
   @Column({
     name: 'kakaoId',
@@ -52,5 +53,5 @@ export class FriendListEntity {
     type: 'bigint',
     nullable: true,
   })
-  kakaoId: string;
+  kakaoId!: string;
 }

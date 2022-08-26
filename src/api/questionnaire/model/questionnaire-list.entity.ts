@@ -1,12 +1,12 @@
 import { Member } from '../../member/model/member.entity';
 import {
-  Entity,
-  PrimaryGeneratedColumn,
   Column,
-  ManyToOne,
+  Entity,
   JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
 } from 'typeorm';
-import { FriendListEntity } from '../../friend/model/list/friend-list.entity';
+import { FriendEntity } from '../../friend/model/friend.entity';
 
 @Entity({ name: 'QuestionnaireList' })
 export class QuestionnaireListEntity {
@@ -15,13 +15,13 @@ export class QuestionnaireListEntity {
 
   @ManyToOne(() => Member, (member) => member.id, { onDelete: 'SET NULL' })
   @JoinColumn({ name: 'fromMemberId', referencedColumnName: 'id' })
-  from: Member;
+  from: number;
 
-  @ManyToOne(() => FriendListEntity, (friend) => friend.id, {
+  @ManyToOne(() => FriendEntity, (friend) => friend.id, {
     onDelete: 'SET NULL',
   })
   @JoinColumn({ name: 'toFriendId', referencedColumnName: 'id' })
-  to: FriendListEntity;
+  to: number;
 
   @Column()
   isCompleted: boolean;

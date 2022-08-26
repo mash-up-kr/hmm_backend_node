@@ -10,7 +10,7 @@ import {
 import { FriendGroupEntity } from 'src/api/friend-group/model/friend-group.entity';
 import { JwtService } from '@nestjs/jwt';
 import { HttpService } from '@nestjs/axios';
-import { FriendListEntity } from 'src/api/friend/model/list/friend-list.entity';
+import { FriendEntity } from 'src/api/friend/model/friend.entity';
 
 @Injectable()
 export class MemberService {
@@ -21,8 +21,8 @@ export class MemberService {
     @InjectRepository(FriendGroupEntity)
     private readonly friendGroupRepository: Repository<FriendGroupEntity>,
 
-    @InjectRepository(FriendListEntity)
-    private readonly friendListRepository: Repository<FriendListEntity>,
+    @InjectRepository(FriendEntity)
+    private readonly friendListRepository: Repository<FriendEntity>,
 
     private readonly jwtService: JwtService,
 
@@ -147,7 +147,7 @@ export class MemberService {
   private async isRegisteredFriend(
     friend: IRecommendedFriends,
   ): Promise<boolean> {
-    const selectedFriend: FriendListEntity | null =
+    const selectedFriend: FriendEntity | null =
       await this.friendListRepository.findOne({
         where: { kakaoId: friend.id },
       });

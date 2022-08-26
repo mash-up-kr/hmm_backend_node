@@ -4,7 +4,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { FriendGroupEntity } from '../friend-group/model/friend-group.entity';
-import { FriendListEntity } from '../friend/model/list/friend-list.entity';
+import { FriendEntity } from '../friend/model/friend.entity';
 import { MemberController } from './controller/member.controller';
 import { Member } from './model/member.entity';
 import { MemberService } from './service/member.service';
@@ -14,7 +14,7 @@ import { KaKaoStrategy } from './strategy/kakao-login.strategy';
 @Module({
   imports: [
     HttpModule,
-    TypeOrmModule.forFeature([Member, FriendGroupEntity, FriendListEntity]),
+    TypeOrmModule.forFeature([Member, FriendGroupEntity, FriendEntity]),
     JwtModule,
     PassportModule,
   ],

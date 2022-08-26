@@ -1,4 +1,4 @@
-export class FriendListResponse {
+export class FriendResponse {
   groupId: number;
   groupName: string;
   friendInfo: FriendInfo[];
@@ -7,5 +7,5 @@ export class FriendListResponse {
 export type FriendInfo = {
   id: number;
   name: string;
-  thumbnailImageUrl: string;
+  thumbnailImageUrl: string | null;
 };

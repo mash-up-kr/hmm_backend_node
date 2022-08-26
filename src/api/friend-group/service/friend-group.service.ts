@@ -8,7 +8,7 @@ import { FriendGroupEntity } from '../model/friend-group.entity';
 import { Repository } from 'typeorm';
 import { FriendGroupDto } from '../model/friend-group.dto';
 import { FriendGroupResponse } from '../model/friend-group.response';
-import { FriendListEntity } from '../../friend/model/list/friend-list.entity';
+import { FriendEntity } from '../../friend/model/friend.entity';
 import { FriendGroupSaveResponse } from '../model/friend-group-save.response';
 
 @Injectable()
@@ -16,8 +16,8 @@ export class FriendGroupService {
   constructor(
     @InjectRepository(FriendGroupEntity)
     private friendGroupEntityRepository: Repository<FriendGroupEntity>,
-    @InjectRepository(FriendListEntity)
-    private friendListEntityRepository: Repository<FriendListEntity>,
+    @InjectRepository(FriendEntity)
+    private friendListEntityRepository: Repository<FriendEntity>,
   ) {}
 
   async findAllGroupsBy(memberId: number): Promise<FriendGroupResponse[]> {
@@ -30,16 +30,22 @@ export class FriendGroupService {
         const friendsInGroup = await this.friendListEntityRepository.findBy({
           groupId: group.id,
         });
+        const thumbnailImageUrls = this.getThumbnailImageUrls(friendsInGroup);
+
         return {
           groupId: group.id,
           groupName: group.name,
           groupMemberCount,
-          thumbnailImageUrls: friendsInGroup.map(
-            (friend) => friend.thumbnailImageUrl,
-          ),
+          thumbnailImageUrls,
         };
       }),
     );
+  }
+
+  private getThumbnailImageUrls(friendsInGroup: FriendEntity[]) {
+    return friendsInGroup
+      .map((friend) => friend.thumbnailImageUrl)
+      .filter((url): url is string => !!url);
   }
 
   async createGroup(dto: FriendGroupDto): Promise<FriendGroupSaveResponse> {

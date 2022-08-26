@@ -5,7 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { QuestionnaireListEntity } from './model/questionnaire-list.entity';
 import { QuestionnaireDetailEntity } from './model/questionnaire-detail.entity';
 import { Member } from '../member/model/member.entity';
-import { FriendListEntity } from '../friend/model/list/friend-list.entity';
+import { FriendEntity } from '../friend/model/friend.entity';
 
 @Module({
   providers: [QuestionnaireService],
@@ -15,7 +15,7 @@ import { FriendListEntity } from '../friend/model/list/friend-list.entity';
       QuestionnaireListEntity,
       QuestionnaireDetailEntity,
       Member,
-      FriendListEntity,
+      FriendEntity,
     ]),
   ],
 })
