@@ -18,6 +18,7 @@ import { QuestionnaireListEntity } from '../model/questionnaire-list.entity';
 import { QuestionnaireCreationResponse } from '../model/questionnaire-creation.response';
 import { QuestionnaireAnswerResponse } from '../model/questionnaire-answer.response';
 import { ProfileReadResponse } from '../model/profile-read.response';
+import { QuestionnaireReadResponse } from '../model/questionnaire-read.response';
 
 type User = {
   user: {
@@ -66,13 +67,21 @@ export class QuestionnaireController {
     }
   }
 
-  // 답변
+  // 답변하기용 보낸 사람 이름 + 질문지 조회
   @Get(':listId')
   async readMyAnswer(
     @Param('listId') listId: number,
     @Query('aspect') aspect: string,
   ) {
-    return await this.questionnaireService.readQuestionnaire(listId, aspect);
+    const questionnaire: QuestionnaireReadResponse[] =
+      await this.questionnaireService.readQuestionnaire(listId, aspect);
+    const memberName: string =
+      await this.questionnaireService.getMemberNameByList(listId);
+
+    return {
+      memberName: memberName,
+      questionnaire: questionnaire,
+    };
   }
 
   //  친구 프로필 + 답변 완료된 답변 조회

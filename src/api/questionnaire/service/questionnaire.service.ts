@@ -3,6 +3,7 @@ import {
   HttpException,
   HttpStatus,
   Injectable,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { QuestionnaireListEntity } from '../model/questionnaire-list.entity';
@@ -229,6 +230,23 @@ export class QuestionnaireService {
         }
       }
     }
+  }
+
+  async getMemberNameByList(listId: number): Promise<string> {
+    const questionnaireList: QuestionnaireListEntity | null =
+      await this.findListById(listId);
+    if (!questionnaireList) {
+      throw new BadRequestException('존재하지 않는 질문지입니다.');
+    }
+
+    const member: Member | null = await this.findMemberById(
+      questionnaireList.from,
+    );
+    if (!member) {
+      throw new InternalServerErrorException('잘못된 회원 정보입니다.');
+    }
+
+    return member.name;
   }
 
   async readQuestionnaire(
