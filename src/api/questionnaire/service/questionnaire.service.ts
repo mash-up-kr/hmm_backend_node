@@ -166,69 +166,72 @@ export class QuestionnaireService {
 
   async createQuestionnaire(
     createDto: QuestionnaireCreationDto,
-    req: Request,
+    userId: number,
   ): Promise<QuestionnaireCreationResponse> {
     const details: QuestionnaireDetailEntity[] = createDto.questionnaireDetails;
-
-    const user: any = req.user;
-    const userId = user.id;
 
     const fromMember: Member | null = await this.findMemberById(userId);
     const toFriend: FriendEntity | null = await this.findFriendById(
       createDto.toFriendId,
     );
+    if (!fromMember || !toFriend)
+      throw new BadRequestException('없는 계정 혹은 친구 정보입니다.');
 
-    if (!fromMember || !toFriend) {
-      // 에러처리 추후에 수정 필요
-      throw new HttpException(
-        {
-          status: HttpStatus.BAD_REQUEST,
-          error: 'member id not found',
-        },
-        HttpStatus.BAD_REQUEST,
-      );
+    const existentList: QuestionnaireListEntity | null =
+      await this.findQnListByToAndFrom(toFriend, fromMember);
+
+    if (existentList) {
+      // 이미 있는 리스트에 질문 추가하기
+      await this.createExistQuestionnaire(existentList, details);
     } else {
-      const existentList: QuestionnaireListEntity | null =
-        await this.findQnListByToAndFrom(toFriend, fromMember);
+      // 새 리스트 만들기
+      const list: QuestionnaireListEntity = new QuestionnaireListEntity();
+      list.from = fromMember;
+      list.to = toFriend;
+      list.isCompleted = false;
 
-      if (existentList) {
-        // 이미 있는 리스트에 질문 추가하기
-        details.forEach((detail) => {
-          detail.questionList = existentList;
-          detail.createdStep = existentList.createdStep + 1;
-        });
-        await this.detailEntityRepository.save(details);
-        existentList.createdStep += 1;
-        await this.listEntityRepository.save(existentList);
-        return {
-          isSuccess: true,
-        };
-      } else {
-        // 새 리스트 만들기
-        const list: QuestionnaireListEntity = new QuestionnaireListEntity();
-        list.from = fromMember;
-        list.to = toFriend;
-        list.isCompleted = false;
-
-        const savedList: QuestionnaireListEntity | null =
-          await this.listEntityRepository.save(list);
-        details.forEach((detail) => {
-          detail.questionList = savedList;
-        });
-
-        if (!savedList) {
-          // 에러 처리 필요
-          console.log('error');
-          return {
-            isSuccess: false,
-          };
-        } else {
-          await this.detailEntityRepository.save(details);
-          return {
-            isSuccess: true,
-          };
-        }
+      const savedList: QuestionnaireListEntity | null =
+        await this.listEntityRepository.save(list);
+      if (!savedList) {
+        throw new InternalServerErrorException(
+          '리스트 저장에 오류가 발생했습니다.',
+        );
       }
+      details.forEach((detail) => {
+        detail.questionList = savedList;
+      });
+
+      if (!(await this.detailEntityRepository.save(details))) {
+        throw new InternalServerErrorException(
+          '저장하던 중 오류가 발생했습니다.',
+        );
+      }
+    }
+    return {
+      isSuccess: true,
+    };
+  }
+
+  async createExistQuestionnaire(
+    existentList: QuestionnaireListEntity,
+    details: QuestionnaireDetailEntity[],
+  ): Promise<void> {
+    details.forEach((detail) => {
+      detail.questionList = existentList;
+      detail.createdStep = existentList.createdStep + 1;
+    });
+    const questionnaireDetail: QuestionnaireDetailEntity[] | null =
+      await this.detailEntityRepository.save(details);
+
+    existentList.createdStep += 1;
+    existentList.isCompleted = false;
+    const questionnaireList: QuestionnaireListEntity | null =
+      await this.listEntityRepository.save(existentList);
+
+    if (!questionnaireList || !questionnaireDetail) {
+      throw new InternalServerErrorException(
+        '저장하는 중 오류가 발생했습니다.',
+      );
     }
   }
 
