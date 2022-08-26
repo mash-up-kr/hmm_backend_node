@@ -17,6 +17,13 @@ import { JwtAuthGuard } from '../../member/guard/jwt.guard';
 import { QuestionnaireListEntity } from '../model/questionnaire-list.entity';
 import { QuestionnaireCreationResponse } from '../model/questionnaire-creation.response';
 import { QuestionnaireAnswerResponse } from '../model/questionnaire-answer.response';
+import { ProfileReadResponse } from '../model/profile-read.response';
+
+type User = {
+  user: {
+    id: number;
+  };
+};
 
 @Controller('questionnaire')
 export class QuestionnaireController {
@@ -66,5 +73,15 @@ export class QuestionnaireController {
     @Query('aspect') aspect: string,
   ) {
     return await this.questionnaireService.readQuestionnaire(listId, aspect);
+  }
+
+  //  친구 프로필 + 답변 완료된 답변 조회
+  @UseGuards(JwtAuthGuard)
+  @Get('/profile/:friendId')
+  async readProfile(
+    @Param('friendId') friendId: number,
+    @Req() req: User,
+  ): Promise<ProfileReadResponse> {
+    return await this.questionnaireService.getProfile(friendId, req.user.id);
   }
 }
