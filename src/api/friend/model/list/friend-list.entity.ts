@@ -50,6 +50,7 @@ export class FriendListEntity {
     name: 'kakaoId',
     comment: '카카오톡에서 부여하는 고유한 id',
     type: 'bigint',
+    nullable: true,
   })
   kakaoId: string;
 }
