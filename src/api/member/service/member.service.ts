@@ -1,4 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { Member } from '../model/member.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -73,6 +78,7 @@ export class MemberService {
       kakaoToken,
       0,
     );
+
     const totalFriendsCount: number = kakaoData.data.total_count;
 
     const totalFriendsList: IRecommendedFriends[] =
@@ -97,7 +103,16 @@ export class MemberService {
         headers: header,
         params: { offset, limit },
       })
-      .toPromise();
+      .toPromise()
+      .catch(() => {
+        throw new HttpException(
+          {
+            statusCode: 1000,
+            message: 'AccessToken Expired',
+          },
+          HttpStatus.UNAUTHORIZED,
+        );
+      });
   }
 
   private async getTotalFriendsList(
