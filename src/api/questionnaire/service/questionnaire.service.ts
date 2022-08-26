@@ -279,7 +279,7 @@ export class QuestionnaireService {
   ): Promise<ProfileReadResponse> {
     const response: ProfileReadResponse = new ProfileReadResponse();
 
-    const friend: FriendListEntity | null = await this.findFriendById(friendId);
+    const friend: FriendEntity | null = await this.findFriendById(friendId);
     const member: Member | null = await this.findMemberById(memberId);
 
     if (!friend || !member) {

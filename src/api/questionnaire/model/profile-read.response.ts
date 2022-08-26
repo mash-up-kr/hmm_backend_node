@@ -1,8 +1,8 @@
-import { FriendListEntity } from '../../friend/model/list/friend-list.entity';
+import { FriendEntity } from '../../friend/model/friend.entity';
 import { QuestionnaireReadResponse } from './questionnaire-read.response';
 
 export class ProfileReadResponse {
-  profile: FriendListEntity;
+  profile: FriendEntity;
   myAnswer: QuestionnaireReadResponse[];
   friendAnswer: QuestionnaireReadResponse[];
 }
