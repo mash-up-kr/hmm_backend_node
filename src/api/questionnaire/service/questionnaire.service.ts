@@ -17,6 +17,7 @@ import { QuestionnaireCreationResponse } from '../model/questionnaire-creation.r
 import { FriendEntity } from '../../friend/model/friend.entity';
 import { QuestionnaireReadResponse } from '../model/questionnaire-read.response';
 import { ProfileReadResponse } from '../model/profile-read.response';
+import { QuestionnaireController } from '../controller/questionnaire.controller';
 
 @Injectable()
 export class QuestionnaireService {
@@ -194,19 +195,20 @@ export class QuestionnaireService {
         await this.listEntityRepository.save(list);
       if (!savedList) {
         throw new InternalServerErrorException(
-          '리스트 저장에 오류가 발생했습니다.',
+          '저장하던 중 오류가 발생했습니다.',
         );
       }
+
       details.forEach((detail) => {
         detail.questionList = savedList;
       });
-
       if (!(await this.detailEntityRepository.save(details))) {
         throw new InternalServerErrorException(
           '저장하던 중 오류가 발생했습니다.',
         );
       }
     }
+
     return {
       isSuccess: true,
     };
