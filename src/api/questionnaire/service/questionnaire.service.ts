@@ -200,19 +200,20 @@ export class QuestionnaireService {
         await this.listEntityRepository.save(list);
       if (!savedList) {
         throw new InternalServerErrorException(
-          '리스트 저장에 오류가 발생했습니다.',
+          '저장하던 중 오류가 발생했습니다.',
         );
       }
+
       details.forEach((detail) => {
         detail.questionList = savedList;
       });
-
       if (!(await this.detailEntityRepository.save(details))) {
         throw new InternalServerErrorException(
           '저장하던 중 오류가 발생했습니다.',
         );
       }
     }
+
     return {
       isSuccess: true,
     };
