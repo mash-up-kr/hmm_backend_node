@@ -26,4 +26,16 @@ export class FriendController {
   async setFriend(@Body() friendDto: FriendDto): Promise<CreatedFriendReponse> {
     return await this.friendListService.setFriend(friendDto);
   }
+
+  /**
+   * @description 친구정보 수정하기
+   *
+   */
+  @Post(':friendId')
+  async updateFriend(
+    @Param('friendId') friendId: number,
+    @Body() friendDto: FriendDto,
+  ): Promise<CreatedFriendReponse> {
+    return await this.friendListService.updateFriend(friendId, friendDto);
+  }
 }

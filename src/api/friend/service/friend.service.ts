@@ -36,6 +36,18 @@ export class FriendService {
     return { friendId: id };
   }
 
+  async updateFriend(
+    friendId: number,
+    dto: FriendDto,
+  ): Promise<CreatedFriendReponse> {
+    try {
+      await this.friendListEntityRepository.update(friendId, dto);
+    } catch (e) {
+      throw new InternalServerErrorException('친구정보 수정에 실패했습니다.');
+    }
+    return { friendId };
+  }
+
   private getFriendEntityForSave(dto: FriendDto) {
     return {
       isMember: !!dto.kakaoId,
