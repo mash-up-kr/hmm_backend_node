@@ -4,7 +4,6 @@ import { FriendGroupEntity } from '../model/friend-group.entity';
 import { Repository } from 'typeorm';
 import { FriendGroupDto } from '../model/friend-group.dto';
 import { FriendGroupResponse } from '../model/friend-group.response';
-import { FriendEntity } from '../../friend/model/friend.entity';
 import { FriendGroupSaveResponse } from '../model/friend-group-save.response';
 import { FriendGroupHelpService } from './friend-group-help-service';
 
@@ -13,8 +12,6 @@ export class FriendGroupService {
   constructor(
     @InjectRepository(FriendGroupEntity)
     private friendGroupEntityRepository: Repository<FriendGroupEntity>,
-    @InjectRepository(FriendEntity)
-    private friendListEntityRepository: Repository<FriendEntity>,
     private readonly friendGroupHelpService: FriendGroupHelpService,
   ) {}
 
