@@ -2,6 +2,7 @@ import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { FriendService } from '../service/friend.service';
 import { CreatedFriendReponse, FriendResponse } from '../model/friend.response';
 import { FriendDto } from '../model/friend.dto';
+import { FriendQueryExecuteResponse } from '../model/friend-query-execute.response';
 
 @Controller('friend')
 export class FriendController {
@@ -37,5 +38,16 @@ export class FriendController {
     @Body() friendDto: FriendDto,
   ): Promise<CreatedFriendReponse> {
     return await this.friendListService.updateFriend(friendId, friendDto);
+  }
+
+  /**
+   * @description 친구 삭제하기
+   *
+   */
+  @Post(':friendId')
+  async deleteFriend(
+    @Param('friendId') friendId: number,
+  ): Promise<FriendQueryExecuteResponse> {
+    return await this.friendListService.deleteFriend(friendId);
   }
 }

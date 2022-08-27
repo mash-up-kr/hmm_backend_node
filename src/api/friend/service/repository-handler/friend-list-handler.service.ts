@@ -2,7 +2,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { FriendEntity } from '../../model/friend.entity';
 import { Repository } from 'typeorm';
 import { FriendDto } from '../../model/friend.dto';
-import { InternalServerErrorException } from '@nestjs/common';
+import {
+  BadRequestException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 
 export class FriendListHandlerService {
   constructor(
@@ -40,6 +43,14 @@ export class FriendListHandlerService {
     } catch (e) {
       throw new InternalServerErrorException('친구정보 수정에 실패했습니다.');
     }
+  }
+
+  async deleteFriend(friendId: number) {
+    const { affected } = await this.friendListEntityRepository.delete(friendId);
+    if (!affected) {
+      throw new BadRequestException('삭제할 친구가 없습니다.');
+    }
+    return { isSuccess: true };
   }
 
   private getFriendEntityForSave(dto: FriendDto) {
