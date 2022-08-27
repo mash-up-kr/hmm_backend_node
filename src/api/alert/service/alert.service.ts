@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Member } from 'src/api/member/model/member.entity';
 import { Repository } from 'typeorm';
+import { idText } from 'typescript';
 import {
   IAlertExistResponse,
   IAlertResponse,
@@ -20,13 +21,11 @@ export class AlertService {
   ) {}
 
   async getAlerts(memberId: number): Promise<IAlertResponse> {
-    const alerts: IAlertResponse = await this.getAlertsByMemberId(memberId);
-    const alertCount: number =
-      alerts.completedAnswers.length + alerts.questionRequests.length;
+    const alerts: IFormattedAlerts[] = await this.getAlertsByMemberId(memberId);
+    const alertCount: number = alerts.length;
 
     return {
-      questionRequests: alerts.questionRequests,
-      completedAnswers: alerts.completedAnswers,
+      alerts: alerts,
       alertCount: alertCount,
     };
   }
@@ -45,15 +44,19 @@ export class AlertService {
     return { alertExistence: false };
   }
 
-  private async getAlertsByMemberId(memberId: number): Promise<IAlertResponse> {
+  private async getAlertsByMemberId(
+    memberId: number,
+  ): Promise<IFormattedAlerts[]> {
     const member: Member = await this.memberepository.findOneByOrFail({
       id: memberId,
     });
+
     const requestAlerts: AlertEntity[] = await this.alertEntityRepository.find({
       where: { member: member, isRequestAlert: true },
       relations: { friend: true, questionnaireList: true },
       order: { createdAt: 'DESC' },
     });
+
     const responseAlerts: AlertEntity[] = await this.alertEntityRepository.find(
       {
         where: { member: member, isRequestAlert: false },
@@ -62,27 +65,33 @@ export class AlertService {
       },
     );
 
-    const formattedRequestAlerts: IFormattedAlerts[] =
-      this.formattingAlerts(requestAlerts);
-    const formattedResponseAlerts: IFormattedAlerts[] =
-      this.formattingAlerts(responseAlerts);
+    const formattedAlerts: IFormattedAlerts[] = this.formattingAlerts(
+      requestAlerts.concat(responseAlerts),
+    );
 
-    return {
-      questionRequests: formattedRequestAlerts,
-      completedAnswers: formattedResponseAlerts,
-    };
+    return formattedAlerts;
   }
 
   private formattingAlerts(alerts: AlertEntity[]): IFormattedAlerts[] {
     const formattedAlerts: IFormattedAlerts[] = [];
 
-    alerts.map((alert: AlertEntity) =>
-      formattedAlerts.push({
-        friendId: alert.friend.id,
-        questionnaireId: alert.questionnaireList.id,
-        createdAt: alert.createdAt,
-      }),
-    );
+    alerts.map((alert: AlertEntity) => {
+      if (alert.isRequestAlert) {
+        formattedAlerts.push({
+          friendId: alert.friend.id,
+          questionnaireId: alert.questionnaireList.id,
+          createdAt: alert.createdAt,
+          type: 'questionRequests',
+        });
+      } else {
+        formattedAlerts.push({
+          friendId: alert.friend.id,
+          questionnaireId: alert.questionnaireList.id,
+          createdAt: alert.createdAt,
+          type: 'completedAnswers',
+        });
+      }
+    });
 
     return formattedAlerts;
   }
