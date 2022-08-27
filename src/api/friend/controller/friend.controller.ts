@@ -15,7 +15,7 @@ export class FriendController {
    */
   @Get(':groupId')
   async getFriends(@Param('groupId') groupId: number): Promise<FriendResponse> {
-    return await this.friendListService.getFriends(groupId);
+    return await this.friendListService.getFriendsWith(groupId);
   }
 
   /**
