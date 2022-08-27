@@ -68,6 +68,9 @@ export class FriendGroupService {
   async updateGroupName(groupId: number, name: Pick<FriendGroupDto, 'name'>) {
     try {
       await this.friendGroupEntityRepository.update(groupId, name);
+      return {
+        isSuccess: true,
+      };
     } catch (e) {
       throw new InternalServerErrorException('그룹명 변경에 실패했습니다.');
     }
