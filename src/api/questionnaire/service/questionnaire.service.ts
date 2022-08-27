@@ -3,6 +3,7 @@ import {
   HttpException,
   HttpStatus,
   Injectable,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { QuestionnaireListEntity } from '../model/questionnaire-list.entity';
@@ -98,8 +99,8 @@ export class QuestionnaireService {
   ): Promise<QuestionnaireListEntity | null> {
     return await this.listEntityRepository.findOne({
       where: {
-        from: fromMember.id,
-        to: toFriend.id,
+        from: fromMember,
+        to: toFriend,
       },
     });
   }
@@ -205,8 +206,8 @@ export class QuestionnaireService {
       } else {
         // 새 리스트 만들기
         const list: QuestionnaireListEntity = new QuestionnaireListEntity();
-        list.from = fromMember.id;
-        list.to = toFriend.id;
+        list.from = fromMember;
+        list.to = toFriend;
         list.isCompleted = false;
 
         const savedList: QuestionnaireListEntity | null =
@@ -229,6 +230,21 @@ export class QuestionnaireService {
         }
       }
     }
+  }
+
+  async getMemberNameByList(listId: number): Promise<string> {
+    const questionnaireList: QuestionnaireListEntity | null =
+      await this.findListById(listId);
+    if (!questionnaireList) {
+      throw new BadRequestException('존재하지 않는 질문지입니다.');
+    }
+
+    const member: Member | null = questionnaireList.from;
+    if (!member) {
+      throw new InternalServerErrorException('잘못된 회원 정보입니다.');
+    }
+
+    return member.name;
   }
 
   async readQuestionnaire(

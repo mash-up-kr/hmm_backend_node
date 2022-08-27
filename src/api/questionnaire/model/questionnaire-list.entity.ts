@@ -13,15 +13,18 @@ export class QuestionnaireListEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => Member, (member) => member.id, { onDelete: 'SET NULL' })
+  @ManyToOne(() => Member, (member) => member.id, {
+    onDelete: 'SET NULL',
+    eager: true,
+  })
   @JoinColumn({ name: 'fromMemberId', referencedColumnName: 'id' })
-  from: number;
+  from: Member;
 
   @ManyToOne(() => FriendEntity, (friend) => friend.id, {
     onDelete: 'SET NULL',
   })
   @JoinColumn({ name: 'toFriendId', referencedColumnName: 'id' })
-  to: number;
+  to: FriendEntity;
 
   @Column()
   isCompleted: boolean;
