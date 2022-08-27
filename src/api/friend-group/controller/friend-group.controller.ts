@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { FriendGroupService } from '../service/friend-group.service';
 import { FriendGroupDto } from '../model/friend-group.dto';
 import { JwtAuthGuard } from '../../member/guard/jwt.guard';
@@ -36,5 +45,16 @@ export class FriendGroupController {
   @Get()
   async getGroups(@Req() req: User): Promise<FriendGroupResponse[]> {
     return await this.groupService.findAllGroupsBy(req.user.id);
+  }
+
+  /**
+   * @description 생성된 그룹을 삭제합니다.
+   * @param groupId
+   */
+  @Delete(':groupId')
+  async deleteGroups(
+    @Param('groupId') groupId: number,
+  ): Promise<FriendGroupSaveResponse> {
+    return await this.groupService.deleteGroup(groupId);
   }
 }
