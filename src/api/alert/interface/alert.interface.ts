@@ -1,6 +1,6 @@
 export interface IAlertResponse {
   alerts: IFormattedAlerts[];
-  alertCount?: number;
+  alertCount: number;
 }
 
 export interface IFormattedAlerts {
