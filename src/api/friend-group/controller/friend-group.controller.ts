@@ -57,4 +57,17 @@ export class FriendGroupController {
   ): Promise<FriendGroupSaveResponse> {
     return await this.groupService.deleteGroup(groupId);
   }
+
+  /**
+   * @description 그룹의 이름을 수정합니다.
+   * @param groupId
+   * @param name
+   */
+  @Post(':groupId')
+  async updateGroup(
+    @Param('groupId') groupId: number,
+    @Body() name: Pick<FriendGroupDto, 'name'>,
+  ): Promise<FriendGroupSaveResponse> {
+    return await this.groupService.updateGroupName(groupId, name);
+  }
 }
