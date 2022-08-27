@@ -57,6 +57,14 @@ export class FriendGroupService {
     return { isSuccess: true };
   }
 
+  async deleteGroup(groupId: number): Promise<FriendGroupSaveResponse> {
+    const { affected } = await this.friendGroupEntityRepository.delete(groupId);
+    if (!affected) {
+      throw new BadRequestException('삭제할 그룹이 없습니다.');
+    }
+    return { isSuccess: true };
+  }
+
   private async assertDuplicatedGroup({ memberId, name }: FriendGroupDto) {
     const existedGroups = await this.friendGroupEntityRepository.findBy({
       memberId,
