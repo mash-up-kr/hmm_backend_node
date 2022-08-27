@@ -65,6 +65,17 @@ export class FriendGroupService {
     return { isSuccess: true };
   }
 
+  async updateGroupName(groupId: number, name: Pick<FriendGroupDto, 'name'>) {
+    try {
+      await this.friendGroupEntityRepository.update(groupId, name);
+      return {
+        isSuccess: true,
+      };
+    } catch (e) {
+      throw new InternalServerErrorException('그룹명 변경에 실패했습니다.');
+    }
+  }
+
   private async assertDuplicatedGroup({ memberId, name }: FriendGroupDto) {
     const existedGroups = await this.friendGroupEntityRepository.findBy({
       memberId,
