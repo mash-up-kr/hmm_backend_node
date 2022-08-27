@@ -5,7 +5,7 @@ import { Repository } from 'typeorm';
 import {
   IAlertExistResponse,
   IAlertResponse,
-  IFormattedAlerts,
+  IFormattedAlert,
 } from '../interface/alert.interface';
 import { AlertEntity } from '../model/alert.entity';
 
@@ -20,7 +20,7 @@ export class AlertService {
   ) {}
 
   async getAlerts(memberId: number): Promise<IAlertResponse> {
-    const alerts: IFormattedAlerts[] = await this.getAlertsByMemberId(memberId);
+    const alerts: IFormattedAlert[] = await this.getAlertsByMemberId(memberId);
     const alertCount: number = alerts.length;
 
     return {
@@ -45,7 +45,7 @@ export class AlertService {
 
   private async getAlertsByMemberId(
     memberId: number,
-  ): Promise<IFormattedAlerts[]> {
+  ): Promise<IFormattedAlert[]> {
     const member: Member = await this.memberepository.findOneByOrFail({
       id: memberId,
     });
@@ -64,29 +64,29 @@ export class AlertService {
       },
     );
 
-    const formattedAlerts: IFormattedAlerts[] = this.formattingAlerts(
+    const formattedAlerts: IFormattedAlert[] = this.formattingAlerts(
       requestAlerts.concat(responseAlerts),
     );
 
     return formattedAlerts;
   }
 
-  private formattingAlerts(alerts: AlertEntity[]): IFormattedAlerts[] {
-    const formattedAlerts: IFormattedAlerts[] = [];
+  private formattingAlerts(alerts: AlertEntity[]): IFormattedAlert[] {
+    const formattedAlerts: IFormattedAlert[] = [];
 
     alerts.map((alert: AlertEntity) => {
       if (alert.isRequestAlert) {
         formattedAlerts.push({
           friendId: alert.friend.id,
           questionnaireId: alert.questionnaireList.id,
-          createdAt: alert.createdAt,
+          createdAt: alert.createdAt.getTime(),
           type: 'questionRequests',
         });
       } else {
         formattedAlerts.push({
           friendId: alert.friend.id,
           questionnaireId: alert.questionnaireList.id,
-          createdAt: alert.createdAt,
+          createdAt: alert.createdAt.getTime(),
           type: 'completedAnswers',
         });
       }

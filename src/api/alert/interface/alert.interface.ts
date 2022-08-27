@@ -1,12 +1,12 @@
 export interface IAlertResponse {
-  alerts: IFormattedAlerts[];
+  alerts: IFormattedAlert[];
   alertCount: number;
 }
 
-export interface IFormattedAlerts {
+export interface IFormattedAlert {
   friendId: number;
   questionnaireId: number;
-  createdAt: Date;
+  createdAt: number;
   type: string;
 }
 
