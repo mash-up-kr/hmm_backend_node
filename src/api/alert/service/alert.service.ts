@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Member } from 'src/api/member/model/member.entity';
 import { Repository } from 'typeorm';
-import { idText } from 'typescript';
 import {
   IAlertExistResponse,
   IAlertResponse,
