@@ -16,7 +16,11 @@ import { Request } from 'express';
 import { QuestionnaireCreationResponse } from '../model/questionnaire-creation.response';
 import { FriendEntity } from '../../friend/model/friend.entity';
 import { QuestionnaireReadResponse } from '../model/questionnaire-read.response';
-import { ProfileReadResponse } from '../model/profile-read.response';
+import {
+  ProfileDto,
+  ProfileReadResponse,
+} from '../model/profile-read.response';
+import { FriendGroupEntity } from '../../friend-group/model/friend-group.entity';
 
 @Injectable()
 export class QuestionnaireService {
@@ -29,6 +33,8 @@ export class QuestionnaireService {
     private memberRepository: Repository<Member>,
     @InjectRepository(FriendEntity)
     private friendListRepository: Repository<FriendEntity>,
+    @InjectRepository(FriendGroupEntity)
+    private friendGroupRepository: Repository<FriendGroupEntity>,
   ) {}
 
   async findDetailById(
@@ -297,12 +303,10 @@ export class QuestionnaireService {
 
     const friend: FriendEntity | null = await this.findFriendById(friendId);
     const member: Member | null = await this.findMemberById(memberId);
-
     if (!friend || !member) {
       throw new BadRequestException('존재하지 않는 친구, 계정입니다.');
     }
-
-    response.profile = friend;
+    response.profile = await this.getFriendProfile(friend);
 
     const questionnaireList: QuestionnaireListEntity | null =
       await this.findQnListByToAndFrom(friend, member);
@@ -323,5 +327,27 @@ export class QuestionnaireService {
     );
 
     return response;
+  }
+
+  async getFriendProfile(friend: FriendEntity): Promise<ProfileDto> {
+    const friendProfile: ProfileDto = new ProfileDto();
+    friendProfile.id = friend.id;
+    friendProfile.name = friend.name;
+    friendProfile.dateOfBirth = friend.dateOfBirth;
+    friendProfile.isMember = friend.isMember;
+    friendProfile.thumbnailImageUrl = friend.thumbnailImageUrl;
+
+    const friendGroup: FriendGroupEntity | null =
+      await this.friendGroupRepository.findOne({
+        where: {
+          id: friend.groupId,
+        },
+      });
+    if (!friendGroup) {
+      throw new BadRequestException('존재하지 않는 그룹입니다.');
+    }
+    friendProfile.groupName = friendGroup.name;
+
+    return friendProfile;
   }
 }

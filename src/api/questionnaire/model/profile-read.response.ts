@@ -1,8 +1,16 @@
-import { FriendEntity } from '../../friend/model/friend.entity';
 import { QuestionnaireReadResponse } from './questionnaire-read.response';
 
+export class ProfileDto {
+  id: number;
+  groupName: string;
+  name: string;
+  dateOfBirth: string;
+  isMember: boolean;
+  thumbnailImageUrl: string;
+}
+
 export class ProfileReadResponse {
-  profile: FriendEntity;
+  profile: ProfileDto;
   myAnswer: QuestionnaireReadResponse[];
   friendAnswer: QuestionnaireReadResponse[];
 }
