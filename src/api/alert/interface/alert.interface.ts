@@ -1,13 +1,13 @@
 export interface IAlertResponse {
-  questionRequests: IFormattedAlerts[];
-  completedAnswers: IFormattedAlerts[];
-  alertCount?: number;
+  alerts: IFormattedAlert[];
+  alertCount: number;
 }
 
-export interface IFormattedAlerts {
+export interface IFormattedAlert {
   friendId: number;
   questionnaireId: number;
-  createdAt: Date;
+  createdAt: number;
+  type: string;
 }
 
 export interface IAlertExistResponse {

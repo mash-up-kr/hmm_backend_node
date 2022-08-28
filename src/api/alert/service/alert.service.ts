@@ -5,7 +5,7 @@ import { Repository } from 'typeorm';
 import {
   IAlertExistResponse,
   IAlertResponse,
-  IFormattedAlerts,
+  IFormattedAlert,
 } from '../interface/alert.interface';
 import { AlertEntity } from '../model/alert.entity';
 
@@ -20,13 +20,11 @@ export class AlertService {
   ) {}
 
   async getAlerts(memberId: number): Promise<IAlertResponse> {
-    const alerts: IAlertResponse = await this.getAlertsByMemberId(memberId);
-    const alertCount: number =
-      alerts.completedAnswers.length + alerts.questionRequests.length;
+    const alerts: IFormattedAlert[] = await this.getAlertsByMemberId(memberId);
+    const alertCount: number = alerts.length;
 
     return {
-      questionRequests: alerts.questionRequests,
-      completedAnswers: alerts.completedAnswers,
+      alerts: alerts,
       alertCount: alertCount,
     };
   }
@@ -45,15 +43,19 @@ export class AlertService {
     return { alertExistence: false };
   }
 
-  private async getAlertsByMemberId(memberId: number): Promise<IAlertResponse> {
+  private async getAlertsByMemberId(
+    memberId: number,
+  ): Promise<IFormattedAlert[]> {
     const member: Member = await this.memberepository.findOneByOrFail({
       id: memberId,
     });
+
     const requestAlerts: AlertEntity[] = await this.alertEntityRepository.find({
       where: { member: member, isRequestAlert: true },
       relations: { friend: true, questionnaireList: true },
       order: { createdAt: 'DESC' },
     });
+
     const responseAlerts: AlertEntity[] = await this.alertEntityRepository.find(
       {
         where: { member: member, isRequestAlert: false },
@@ -62,27 +64,33 @@ export class AlertService {
       },
     );
 
-    const formattedRequestAlerts: IFormattedAlerts[] =
-      this.formattingAlerts(requestAlerts);
-    const formattedResponseAlerts: IFormattedAlerts[] =
-      this.formattingAlerts(responseAlerts);
+    const formattedAlerts: IFormattedAlert[] = this.formattingAlerts(
+      requestAlerts.concat(responseAlerts),
+    );
 
-    return {
-      questionRequests: formattedRequestAlerts,
-      completedAnswers: formattedResponseAlerts,
-    };
+    return formattedAlerts;
   }
 
-  private formattingAlerts(alerts: AlertEntity[]): IFormattedAlerts[] {
-    const formattedAlerts: IFormattedAlerts[] = [];
+  private formattingAlerts(alerts: AlertEntity[]): IFormattedAlert[] {
+    const formattedAlerts: IFormattedAlert[] = [];
 
-    alerts.map((alert: AlertEntity) =>
-      formattedAlerts.push({
-        friendId: alert.friend.id,
-        questionnaireId: alert.questionnaireList.id,
-        createdAt: alert.createdAt,
-      }),
-    );
+    alerts.map((alert: AlertEntity) => {
+      if (alert.isRequestAlert) {
+        formattedAlerts.push({
+          friendId: alert.friend.id,
+          questionnaireId: alert.questionnaireList.id,
+          createdAt: alert.createdAt.getTime(),
+          type: 'questionRequests',
+        });
+      } else {
+        formattedAlerts.push({
+          friendId: alert.friend.id,
+          questionnaireId: alert.questionnaireList.id,
+          createdAt: alert.createdAt.getTime(),
+          type: 'completedAnswers',
+        });
+      }
+    });
 
     return formattedAlerts;
   }
