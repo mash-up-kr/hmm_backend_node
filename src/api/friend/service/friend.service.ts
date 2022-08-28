@@ -3,6 +3,7 @@ import { CreatedFriendReponse, FriendResponse } from '../model/friend.response';
 import { FriendDto } from '../model/friend.dto';
 import { FriendGroupHandlerService } from './repository-handler/friend-group-handler.service';
 import { FriendListHandlerService } from './repository-handler/friend-list-handler.service';
+import { FriendQueryExecuteResponse } from '../model/friend-query-execute.response';
 
 @Injectable()
 export class FriendService {
@@ -36,5 +37,9 @@ export class FriendService {
   ): Promise<CreatedFriendReponse> {
     await this.friendListHandlerService.updateFriend(friendId, dto);
     return { friendId };
+  }
+
+  async deleteFriend(friendId: number): Promise<FriendQueryExecuteResponse> {
+    return await this.friendListHandlerService.deleteFriend(friendId);
   }
 }
