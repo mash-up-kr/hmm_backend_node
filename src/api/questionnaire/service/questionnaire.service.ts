@@ -12,12 +12,12 @@ import { QuestionnaireDetailEntity } from '../model/questionnaire-detail.entity'
 import { QuestionnaireAnswerCreationDto } from '../model/questionnaire-answer-creation-dto';
 import { QuestionnaireCreationDto } from '../model/questionnaire-creation-dto';
 import { Member } from '../../member/model/member.entity';
-import { Request } from 'express';
 import { QuestionnaireCreationResponse } from '../model/questionnaire-creation.response';
 import { FriendEntity } from '../../friend/model/friend.entity';
 import { QuestionnaireReadResponse } from '../model/questionnaire-read.response';
 import { ProfileReadResponse } from '../model/profile-read.response';
-import { QuestionnaireController } from '../controller/questionnaire.controller';
+import { AlertEntity } from '../../alert/model/alert.entity';
+import { FriendGroupEntity } from '../../friend-group/model/friend-group.entity';
 
 @Injectable()
 export class QuestionnaireService {
@@ -30,6 +30,10 @@ export class QuestionnaireService {
     private memberRepository: Repository<Member>,
     @InjectRepository(FriendEntity)
     private friendListRepository: Repository<FriendEntity>,
+    @InjectRepository(FriendGroupEntity)
+    private friendGroupRepository: Repository<FriendGroupEntity>,
+    @InjectRepository(AlertEntity)
+    private alertRepository: Repository<AlertEntity>,
   ) {}
 
   async findDetailById(
@@ -184,6 +188,7 @@ export class QuestionnaireService {
     if (existentList) {
       // 이미 있는 리스트에 질문 추가하기
       await this.createExistQuestionnaire(existentList, details);
+      await this.addAlert(existentList, fromMember, toFriend, true);
     } else {
       // 새 리스트 만들기
       const list: QuestionnaireListEntity = new QuestionnaireListEntity();
@@ -207,6 +212,7 @@ export class QuestionnaireService {
           '저장하던 중 오류가 발생했습니다.',
         );
       }
+      await this.addAlert(savedList, fromMember, toFriend, true);
     }
 
     return {
@@ -233,6 +239,63 @@ export class QuestionnaireService {
     if (!questionnaireList || !questionnaireDetail) {
       throw new InternalServerErrorException(
         '저장하는 중 오류가 발생했습니다.',
+      );
+    }
+  }
+
+  async addAlert(
+    questionnaireList: QuestionnaireListEntity,
+    fromMember: Member,
+    toFriend: FriendEntity,
+    isRequestAlert: boolean,
+  ): Promise<void> {
+    // 아직 받는 사람이 가입자고, 서로가 서로의 친구고, 보낸 사람이 받는 사람 친구의 전체 그룹에 있는 경우만 됨
+    const alert: AlertEntity = new AlertEntity();
+    alert.questionnaireList = questionnaireList;
+    alert.isRequestAlert = isRequestAlert;
+
+    if (!toFriend.isMember) {
+      // 친구가 미가입자면 알림 pass
+      return;
+    }
+
+    const toMember: Member | null = await this.memberRepository.findOne({
+      where: {
+        kakaoId: toFriend.kakaoId,
+      },
+    });
+    if (!toMember) {
+      throw new InternalServerErrorException('존재하지 않는 계정입니다.');
+    }
+    alert.member = toMember;
+
+    const friendGroup: FriendGroupEntity | null =
+      await this.friendGroupRepository.findOne({
+        where: {
+          memberId: toMember.id,
+        },
+      });
+    if (!friendGroup) {
+      throw new InternalServerErrorException('존재하지 않는 친구 그룹입니다.');
+    }
+
+    const fromFriend: FriendEntity | null =
+      await this.friendListRepository.findOne({
+        where: {
+          kakaoId: fromMember.kakaoId,
+          groupId: friendGroup.id,
+        },
+      });
+    if (!fromFriend) {
+      throw new InternalServerErrorException(
+        '친구 목록에 보내는 사람이 등록되지 않았습니다.',
+      );
+    }
+    alert.friend = fromFriend;
+
+    if (!(await this.alertRepository.save(alert))) {
+      throw new InternalServerErrorException(
+        '알림을 저장하던 중 오류가 발생했습니다.',
       );
     }
   }

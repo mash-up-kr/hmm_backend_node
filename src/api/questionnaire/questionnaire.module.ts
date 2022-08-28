@@ -6,6 +6,8 @@ import { QuestionnaireListEntity } from './model/questionnaire-list.entity';
 import { QuestionnaireDetailEntity } from './model/questionnaire-detail.entity';
 import { Member } from '../member/model/member.entity';
 import { FriendEntity } from '../friend/model/friend.entity';
+import { AlertEntity } from '../alert/model/alert.entity';
+import { FriendGroupEntity } from '../friend-group/model/friend-group.entity';
 
 @Module({
   providers: [QuestionnaireService],
@@ -16,6 +18,8 @@ import { FriendEntity } from '../friend/model/friend.entity';
       QuestionnaireDetailEntity,
       Member,
       FriendEntity,
+      FriendGroupEntity,
+      AlertEntity,
     ]),
   ],
 })
