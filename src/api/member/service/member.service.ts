@@ -99,14 +99,24 @@ export class MemberService {
         params: { offset, limit },
       })
       .toPromise()
-      .catch(() => {
-        throw new HttpException(
-          {
-            statusCode: 1000,
-            message: 'AccessToken Expired',
-          },
-          HttpStatus.UNAUTHORIZED,
-        );
+      .catch((e) => {
+        if (e.response.data.code === -402) {
+          throw new HttpException(
+            {
+              statusCode: 1001,
+              message: 'Requires consent to provided friend list',
+            },
+            HttpStatus.UNAUTHORIZED,
+          );
+        } else {
+          throw new HttpException(
+            {
+              statusCode: 1000,
+              message: 'AccessToken Expired',
+            },
+            HttpStatus.UNAUTHORIZED,
+          );
+        }
       });
   }
 
