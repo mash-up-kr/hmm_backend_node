@@ -1,4 +1,4 @@
-import { Controller, Post, UseGuards, Body, Get, Query } from '@nestjs/common';
+import { Controller, Post, UseGuards, Body } from '@nestjs/common';
 import { JwtAuthGuard } from '../guard/jwt.guard';
 import { KakaoAuthGuard } from '../guard/kakao-login.guard';
 import {
@@ -23,7 +23,7 @@ export class MemberController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get('members/recommended-friends')
+  @Post('get/members/recommended-friends')
   async getFriendList(
     @Body() requestingKakaoApiDto: requestingKakaoApiDto,
   ): Promise<IRecommendedFriends[]> {
