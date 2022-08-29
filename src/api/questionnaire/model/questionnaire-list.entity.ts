@@ -15,7 +15,6 @@ export class QuestionnaireListEntity {
 
   @ManyToOne(() => Member, (member) => member.id, {
     onDelete: 'SET NULL',
-    eager: true,
   })
   @JoinColumn({ name: 'fromMemberId', referencedColumnName: 'id' })
   from: Member;
