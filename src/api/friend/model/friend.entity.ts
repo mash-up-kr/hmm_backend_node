@@ -44,6 +44,7 @@ export class FriendEntity {
     name: 'thumbnailImageUrl',
     comment: '프로필이미지 url',
     nullable: true,
+    default: null,
   })
   thumbnailImageUrl!: string;
 
@@ -52,6 +53,7 @@ export class FriendEntity {
     comment: '카카오톡에서 부여하는 고유한 id',
     type: 'bigint',
     nullable: true,
+    default: null,
   })
   kakaoId!: string;
 }
