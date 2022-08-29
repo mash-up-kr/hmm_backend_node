@@ -149,6 +149,32 @@ export class QuestionnaireService {
       returnDetails.push(savedDetail);
     }
 
+    const fromMember: Member | null = await this.findMemberById(userId);
+    if (!fromMember) {
+      throw new BadRequestException('존재하지 않는 계정입니다.');
+    }
+
+    const toMember: Member | null = await this.findMemberById(
+      list.fromMemberId,
+    );
+    if (!toMember) {
+      throw new InternalServerErrorException('존재하지 않는 친구입니다.');
+    }
+
+    const toFriend: FriendEntity | null =
+      await this.friendListRepository.findOne({
+        where: {
+          kakaoId: fromMember.kakaoId,
+          groupId: toMember.defaultGroupId,
+        },
+      });
+    if (!toFriend) {
+      throw new InternalServerErrorException(
+        '친구 목록에 보내는 사람이 등록되지 않았습니다.',
+      );
+    }
+    await this.addAlert(list, fromMember, toFriend, false);
+
     return returnDetails;
   }
 
