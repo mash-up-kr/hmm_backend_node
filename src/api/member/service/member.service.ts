@@ -43,13 +43,19 @@ export class MemberService {
     member.kakaoId = kakaoData.kakaoId;
     member.name = kakaoData.name;
     member.thumbnailImageUrl = kakaoData.thumbnailImageUrl;
-    member = await this.memberRepository.save(member);
+    await this.memberRepository.save(member);
 
     //기본 그룹 생성
     const defaultFriendGroup: FriendGroupEntity = new FriendGroupEntity();
     defaultFriendGroup.name = '모든 친구들';
     defaultFriendGroup.memberId = member.id;
-    await this.friendGroupRepository.save(defaultFriendGroup);
+    const savedDefaultFriendGroup: FriendGroupEntity =
+      await this.friendGroupRepository.save(defaultFriendGroup);
+
+    await this.memberRepository.update(
+      { id: member.id },
+      { defaultGroupId: savedDefaultFriendGroup.id },
+    );
 
     return member;
   }
