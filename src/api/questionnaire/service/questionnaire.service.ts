@@ -1,7 +1,5 @@
 import {
   BadRequestException,
-  HttpException,
-  HttpStatus,
   Injectable,
   InternalServerErrorException,
 } from '@nestjs/common';
@@ -127,24 +125,27 @@ export class QuestionnaireService {
     const list: QuestionnaireListEntity | null = await this.findListById(
       listId,
     );
-
     if (!list) {
-      // TO DO: 에러처리 필요
-      console.log('error');
-    } else {
-      for (const answer of answerCreationDto) {
-        const detail: QuestionnaireDetailEntity | null =
-          await this.findDetailById(answer.questionId);
+      throw new BadRequestException('존재하지 않는 질문지입니다.');
+    }
 
-        if (!detail) {
-          // TO DO: 에러처리 필요
-          console.log('error');
-        } else {
-          // 답변 수정
-          detail.friendAnswer = answer.friendAnswer;
-          returnDetails.push(await this.detailEntityRepository.save(detail));
-        }
+    for (const answer of answerCreationDto) {
+      const detail: QuestionnaireDetailEntity | null =
+        await this.findDetailById(answer.questionId);
+      if (!detail) {
+        throw new BadRequestException('존재하지 않는 질문지입니다.');
       }
+      // 답변 수정
+      detail.friendAnswer = answer.friendAnswer;
+
+      const savedDetail: QuestionnaireDetailEntity | null =
+        await this.detailEntityRepository.save(detail);
+      if (!savedDetail) {
+        throw new InternalServerErrorException(
+          '저장하던 중 오류가 발생했습니다.',
+        );
+      }
+      returnDetails.push(savedDetail);
     }
 
     return returnDetails;
@@ -153,23 +154,15 @@ export class QuestionnaireService {
   async completeQuestionnaire(
     listId: number,
   ): Promise<QuestionnaireListEntity | undefined> {
-    try {
-      const list: QuestionnaireListEntity | null = await this.findListById(
-        listId,
-      );
-
-      if (!list) {
-        // TO DO: 추후 에러처리 필요
-        // TO DO: DeepPartial 문제가 생겨서 일단 해놨고 추후 제대로 찾아서 처리 예정..
-        console.log('error');
-      } else {
-        list.isCompleted = true;
-        return await this.listEntityRepository.save(list);
-      }
-    } catch (e) {
-      // TO DO: 추후 에러처리 필요
-      console.log(e);
+    const list: QuestionnaireListEntity | null = await this.findListById(
+      listId,
+    );
+    if (!list) {
+      throw new BadRequestException('존재하지 않는 질문지입니다.');
     }
+
+    list.isCompleted = true;
+    return await this.listEntityRepository.save(list);
   }
 
   async createQuestionnaire(
