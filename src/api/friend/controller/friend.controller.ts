@@ -1,12 +1,31 @@
-import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { FriendService } from '../service/friend.service';
 import { CreatedFriendReponse, FriendResponse } from '../model/friend.response';
 import { FriendDto } from '../model/friend.dto';
 import { FriendQueryExecuteResponse } from '../model/friend-query-execute.response';
+import { JwtAuthGuard } from '../../member/guard/jwt.guard';
+
+type User = { user: { id: number } };
 
 @Controller('friend')
 export class FriendController {
   constructor(private readonly friendListService: FriendService) {}
+
+  @UseGuards(JwtAuthGuard)
+  @Get()
+  async getAllFriends(@Req() req: User): Promise<FriendResponse> {
+    const memberId = req.user.id;
+    return await this.friendListService.getAllFriends(memberId);
+  }
 
   /**
    * @description 보유한 친구의 목록을 조회
