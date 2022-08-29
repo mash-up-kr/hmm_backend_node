@@ -119,6 +119,7 @@ export class QuestionnaireService {
   async putAnswer(
     listId: number,
     answerCreationDto: QuestionnaireAnswerCreationDto[],
+    userId: number,
   ): Promise<QuestionnaireDetailEntity[]> {
     // 답변 받은 질문 목록 저장
     const returnDetails: QuestionnaireDetailEntity[] = [];
@@ -265,21 +266,11 @@ export class QuestionnaireService {
     }
     alert.member = toMember;
 
-    const friendGroup: FriendGroupEntity | null =
-      await this.friendGroupRepository.findOne({
-        where: {
-          memberId: toMember.id,
-        },
-      });
-    if (!friendGroup) {
-      throw new InternalServerErrorException('존재하지 않는 친구 그룹입니다.');
-    }
-
     const fromFriend: FriendEntity | null =
       await this.friendListRepository.findOne({
         where: {
           kakaoId: fromMember.kakaoId,
-          groupId: friendGroup.id,
+          groupId: toMember.defaultGroupId,
         },
       });
     if (!fromFriend) {

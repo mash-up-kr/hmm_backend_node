@@ -53,9 +53,14 @@ export class QuestionnaireController {
     @Param('listId') listId: number,
     @Body()
     answerCreationDto: QuestionnaireAnswerCreationDto[],
+    @Req() req: User,
   ): Promise<QuestionnaireAnswerResponse> {
     try {
-      await this.questionnaireService.putAnswer(listId, answerCreationDto);
+      await this.questionnaireService.putAnswer(
+        listId,
+        answerCreationDto,
+        req.user.id,
+      );
       await this.questionnaireService.completeQuestionnaire(listId);
 
       return {
