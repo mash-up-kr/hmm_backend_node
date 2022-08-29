@@ -1,5 +1,5 @@
 import { HttpService } from '@nestjs/axios';
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { IMember } from '../interface/member.interface';
 
 @Injectable()
@@ -15,7 +15,16 @@ export class KaKaoStrategy {
 
     const kakaoLoginData: any = await this.http
       .get(apiUrl, { headers: header })
-      .toPromise();
+      .toPromise()
+      .catch(() => {
+        throw new HttpException(
+          {
+            statusCode: 1000,
+            message: 'AccessToken Expired',
+          },
+          HttpStatus.UNAUTHORIZED,
+        );
+      });
 
     return {
       kakaoId: kakaoLoginData.data.id,

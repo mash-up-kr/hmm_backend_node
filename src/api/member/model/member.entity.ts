@@ -13,4 +13,7 @@ export class Member {
 
   @Column()
   thumbnailImageUrl: string;
+
+  @Column({ nullable: true })
+  defaultGroupId: number;
 }
