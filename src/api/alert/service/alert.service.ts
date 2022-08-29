@@ -77,14 +77,22 @@ export class AlertService {
     alerts.map((alert: AlertEntity) => {
       if (alert.isRequestAlert) {
         formattedAlerts.push({
-          friendId: alert.friend.id,
+          friend: {
+            id: alert.friend.id,
+            name: alert.friend.name,
+            thumbnailImageUrl: alert.friend.thumbnailImageUrl,
+          },
           questionnaireId: alert.questionnaireList.id,
           createdAt: alert.createdAt.getTime(),
           type: 'questionRequests',
         });
       } else {
         formattedAlerts.push({
-          friendId: alert.friend.id,
+          friend: {
+            id: alert.friend.id,
+            name: alert.friend.name,
+            thumbnailImageUrl: alert.friend.thumbnailImageUrl,
+          },
           questionnaireId: alert.questionnaireList.id,
           createdAt: alert.createdAt.getTime(),
           type: 'completedAnswers',

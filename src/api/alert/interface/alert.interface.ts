@@ -1,10 +1,12 @@
+import { FriendEntity } from 'src/api/friend/model/friend.entity';
+
 export interface IAlertResponse {
   alerts: IFormattedAlert[];
   alertCount: number;
 }
 
 export interface IFormattedAlert {
-  friendId: number;
+  friend: Partial<FriendEntity>;
   questionnaireId: number;
   createdAt: number;
   type: string;
