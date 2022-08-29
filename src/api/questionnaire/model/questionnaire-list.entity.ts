@@ -19,6 +19,9 @@ export class QuestionnaireListEntity {
   @JoinColumn({ name: 'fromMemberId', referencedColumnName: 'id' })
   from: Member;
 
+  @Column({ name: 'fromMemberId' })
+  fromMemberId: number;
+
   @ManyToOne(() => FriendEntity, (friend) => friend.id, {
     onDelete: 'SET NULL',
   })

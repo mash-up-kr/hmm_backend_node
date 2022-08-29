@@ -245,7 +245,9 @@ export class QuestionnaireService {
       throw new BadRequestException('존재하지 않는 질문지입니다.');
     }
 
-    const member: Member | null = questionnaireList.from;
+    const member: Member | null = await this.findMemberById(
+      questionnaireList.fromMemberId,
+    );
     if (!member) {
       throw new InternalServerErrorException('잘못된 회원 정보입니다.');
     }
