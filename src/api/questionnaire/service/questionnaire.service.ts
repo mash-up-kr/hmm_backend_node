@@ -338,6 +338,7 @@ export class QuestionnaireService {
     friendProfile.dateOfBirth = friend.dateOfBirth;
     friendProfile.isMember = friend.isMember;
     friendProfile.thumbnailImageUrl = friend.thumbnailImageUrl;
+    friendProfile.groupId = friend.groupId;
 
     const friendGroup: FriendGroupEntity | null =
       await this.friendGroupRepository.findOne({
