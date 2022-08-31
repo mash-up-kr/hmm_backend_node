@@ -19,6 +19,5 @@ export class FriendDto {
 
   @IsString()
   @IsOptional()
-  @IsOptional()
   kakaoId?: string;
 }

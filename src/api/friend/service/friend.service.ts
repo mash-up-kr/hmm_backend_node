@@ -7,6 +7,7 @@ import { FriendQueryExecuteResponse } from '../model/friend-query-execute.respon
 import { InjectRepository } from '@nestjs/typeorm';
 import { Member } from '../../member/model/member.entity';
 import { Repository } from 'typeorm';
+import { FriendUpdateDto } from '../model/friend-update.dto';
 
 @Injectable()
 export class FriendService {
@@ -44,7 +45,7 @@ export class FriendService {
 
   async updateFriend(
     friendId: number,
-    dto: FriendDto,
+    dto: FriendUpdateDto,
   ): Promise<CreatedFriendReponse> {
     await this.friendListHandlerService.updateFriend(friendId, dto);
     return { friendId };

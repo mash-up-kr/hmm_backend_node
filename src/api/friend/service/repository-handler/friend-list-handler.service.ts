@@ -6,6 +6,7 @@ import {
   BadRequestException,
   InternalServerErrorException,
 } from '@nestjs/common';
+import { FriendUpdateDto } from '../../model/friend-update.dto';
 
 export class FriendListHandlerService {
   constructor(
@@ -37,11 +38,22 @@ export class FriendListHandlerService {
     return id;
   }
 
-  async updateFriend(friendId: number, dto: FriendDto) {
+  async updateFriend(friendId: number, dto: FriendUpdateDto) {
+    this.assertUpdateFriendWithKakaoId(dto);
     try {
       await this.friendListEntityRepository.update(friendId, dto);
     } catch (e) {
       throw new InternalServerErrorException('친구정보 수정에 실패했습니다.');
+    }
+  }
+
+  private assertUpdateFriendWithKakaoId(dto: FriendUpdateDto) {
+    if (dto.isMember === true) {
+      if (!dto.kakaoId || !dto.thumbnailImageUrl) {
+        throw new BadRequestException(
+          '가입 친구연결은 kakaoId와 thumbnailImageUrl 이 필수입니다.',
+        );
+      }
     }
   }
 

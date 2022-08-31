@@ -13,6 +13,7 @@ import { CreatedFriendReponse, FriendResponse } from '../model/friend.response';
 import { FriendDto } from '../model/friend.dto';
 import { FriendQueryExecuteResponse } from '../model/friend-query-execute.response';
 import { JwtAuthGuard } from '../../member/guard/jwt.guard';
+import { FriendUpdateDto } from '../model/friend-update.dto';
 
 type User = { user: { id: number } };
 
@@ -54,7 +55,7 @@ export class FriendController {
   @Post(':friendId')
   async updateFriend(
     @Param('friendId') friendId: number,
-    @Body() friendDto: FriendDto,
+    @Body() friendDto: FriendUpdateDto,
   ): Promise<CreatedFriendReponse> {
     return await this.friendListService.updateFriend(friendId, friendDto);
   }
