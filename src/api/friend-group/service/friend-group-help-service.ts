@@ -45,9 +45,16 @@ export class FriendGroupHelpService {
     }
   }
 
-  private getThumbnailImageUrls(friendsInGroup: FriendEntity[]) {
-    return friendsInGroup
+  private getThumbnailImageUrls(
+    friendsInGroup: FriendEntity[],
+  ): string | null[] {
+    const urls = friendsInGroup
       .map((friend) => friend.thumbnailImageUrl)
       .filter((url): url is string => !!url);
+
+    const urlCount = urls.length;
+    const nullPolyfill = Array(5).fill(null, urlCount, 5).slice(urlCount, 5);
+
+    return [...urls, ...nullPolyfill];
   }
 }
