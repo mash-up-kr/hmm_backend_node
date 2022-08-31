@@ -1,7 +1,5 @@
 import {
   BadRequestException,
-  HttpException,
-  HttpStatus,
   Injectable,
   InternalServerErrorException,
 } from '@nestjs/common';
@@ -12,7 +10,6 @@ import { QuestionnaireDetailEntity } from '../model/questionnaire-detail.entity'
 import { QuestionnaireAnswerCreationDto } from '../model/questionnaire-answer-creation-dto';
 import { QuestionnaireCreationDto } from '../model/questionnaire-creation-dto';
 import { Member } from '../../member/model/member.entity';
-import { Request } from 'express';
 import { QuestionnaireCreationResponse } from '../model/questionnaire-creation.response';
 import { FriendEntity } from '../../friend/model/friend.entity';
 import { QuestionnaireReadResponse } from '../model/questionnaire-read.response';
@@ -20,6 +17,7 @@ import {
   ProfileDto,
   ProfileReadResponse,
 } from '../model/profile-read.response';
+import { AlertEntity } from '../../alert/model/alert.entity';
 import { FriendGroupEntity } from '../../friend-group/model/friend-group.entity';
 
 @Injectable()
@@ -35,6 +33,8 @@ export class QuestionnaireService {
     private friendListRepository: Repository<FriendEntity>,
     @InjectRepository(FriendGroupEntity)
     private friendGroupRepository: Repository<FriendGroupEntity>,
+    @InjectRepository(AlertEntity)
+    private alertRepository: Repository<AlertEntity>,
   ) {}
 
   async findDetailById(
@@ -119,31 +119,61 @@ export class QuestionnaireService {
   async putAnswer(
     listId: number,
     answerCreationDto: QuestionnaireAnswerCreationDto[],
+    userId: number,
   ): Promise<QuestionnaireDetailEntity[]> {
     // 답변 받은 질문 목록 저장
     const returnDetails: QuestionnaireDetailEntity[] = [];
     const list: QuestionnaireListEntity | null = await this.findListById(
       listId,
     );
-
     if (!list) {
-      // TO DO: 에러처리 필요
-      console.log('error');
-    } else {
-      for (const answer of answerCreationDto) {
-        const detail: QuestionnaireDetailEntity | null =
-          await this.findDetailById(answer.questionId);
-
-        if (!detail) {
-          // TO DO: 에러처리 필요
-          console.log('error');
-        } else {
-          // 답변 수정
-          detail.friendAnswer = answer.friendAnswer;
-          returnDetails.push(await this.detailEntityRepository.save(detail));
-        }
-      }
+      throw new BadRequestException('존재하지 않는 질문지입니다.');
     }
+
+    for (const answer of answerCreationDto) {
+      const detail: QuestionnaireDetailEntity | null =
+        await this.findDetailById(answer.questionId);
+      if (!detail) {
+        throw new BadRequestException('존재하지 않는 질문지입니다.');
+      }
+      // 답변 수정
+      detail.friendAnswer = answer.friendAnswer;
+
+      const savedDetail: QuestionnaireDetailEntity | null =
+        await this.detailEntityRepository.save(detail);
+      if (!savedDetail) {
+        throw new InternalServerErrorException(
+          '저장하던 중 오류가 발생했습니다.',
+        );
+      }
+      returnDetails.push(savedDetail);
+    }
+
+    const fromMember: Member | null = await this.findMemberById(userId);
+    if (!fromMember) {
+      throw new BadRequestException('존재하지 않는 계정입니다.');
+    }
+
+    const toMember: Member | null = await this.findMemberById(
+      list.fromMemberId,
+    );
+    if (!toMember) {
+      throw new InternalServerErrorException('존재하지 않는 친구입니다.');
+    }
+
+    const toFriend: FriendEntity | null =
+      await this.friendListRepository.findOne({
+        where: {
+          kakaoId: fromMember.kakaoId,
+          groupId: toMember.defaultGroupId,
+        },
+      });
+    if (!toFriend) {
+      throw new InternalServerErrorException(
+        '친구 목록에 보내는 사람이 등록되지 않았습니다.',
+      );
+    }
+    await this.addAlert(list, fromMember, toFriend, false);
 
     return returnDetails;
   }
@@ -151,90 +181,135 @@ export class QuestionnaireService {
   async completeQuestionnaire(
     listId: number,
   ): Promise<QuestionnaireListEntity | undefined> {
-    try {
-      const list: QuestionnaireListEntity | null = await this.findListById(
-        listId,
-      );
-
-      if (!list) {
-        // TO DO: 추후 에러처리 필요
-        // TO DO: DeepPartial 문제가 생겨서 일단 해놨고 추후 제대로 찾아서 처리 예정..
-        console.log('error');
-      } else {
-        list.isCompleted = true;
-        return await this.listEntityRepository.save(list);
-      }
-    } catch (e) {
-      // TO DO: 추후 에러처리 필요
-      console.log(e);
+    const list: QuestionnaireListEntity | null = await this.findListById(
+      listId,
+    );
+    if (!list) {
+      throw new BadRequestException('존재하지 않는 질문지입니다.');
     }
+
+    list.isCompleted = true;
+    return await this.listEntityRepository.save(list);
   }
 
   async createQuestionnaire(
     createDto: QuestionnaireCreationDto,
-    req: Request,
+    userId: number,
   ): Promise<QuestionnaireCreationResponse> {
     const details: QuestionnaireDetailEntity[] = createDto.questionnaireDetails;
-
-    const user: any = req.user;
-    const userId = user.id;
 
     const fromMember: Member | null = await this.findMemberById(userId);
     const toFriend: FriendEntity | null = await this.findFriendById(
       createDto.toFriendId,
     );
+    if (!fromMember || !toFriend)
+      throw new BadRequestException('없는 계정 혹은 친구 정보입니다.');
 
-    if (!fromMember || !toFriend) {
-      // 에러처리 추후에 수정 필요
-      throw new HttpException(
-        {
-          status: HttpStatus.BAD_REQUEST,
-          error: 'member id not found',
-        },
-        HttpStatus.BAD_REQUEST,
-      );
+    const existentList: QuestionnaireListEntity | null =
+      await this.findQnListByToAndFrom(toFriend, fromMember);
+
+    if (existentList) {
+      // 이미 있는 리스트에 질문 추가하기
+      await this.createExistQuestionnaire(existentList, details);
+      await this.addAlert(existentList, fromMember, toFriend, true);
     } else {
-      const existentList: QuestionnaireListEntity | null =
-        await this.findQnListByToAndFrom(toFriend, fromMember);
+      // 새 리스트 만들기
+      const list: QuestionnaireListEntity = new QuestionnaireListEntity();
+      list.from = fromMember;
+      list.to = toFriend;
+      list.isCompleted = false;
 
-      if (existentList) {
-        // 이미 있는 리스트에 질문 추가하기
-        details.forEach((detail) => {
-          detail.questionList = existentList;
-          detail.createdStep = existentList.createdStep + 1;
-        });
-        await this.detailEntityRepository.save(details);
-        existentList.createdStep += 1;
-        await this.listEntityRepository.save(existentList);
-        return {
-          isSuccess: true,
-        };
-      } else {
-        // 새 리스트 만들기
-        const list: QuestionnaireListEntity = new QuestionnaireListEntity();
-        list.from = fromMember;
-        list.to = toFriend;
-        list.isCompleted = false;
-
-        const savedList: QuestionnaireListEntity | null =
-          await this.listEntityRepository.save(list);
-        details.forEach((detail) => {
-          detail.questionList = savedList;
-        });
-
-        if (!savedList) {
-          // 에러 처리 필요
-          console.log('error');
-          return {
-            isSuccess: false,
-          };
-        } else {
-          await this.detailEntityRepository.save(details);
-          return {
-            isSuccess: true,
-          };
-        }
+      const savedList: QuestionnaireListEntity | null =
+        await this.listEntityRepository.save(list);
+      if (!savedList) {
+        throw new InternalServerErrorException(
+          '저장하던 중 오류가 발생했습니다.',
+        );
       }
+
+      details.forEach((detail) => {
+        detail.questionList = savedList;
+      });
+      if (!(await this.detailEntityRepository.save(details))) {
+        throw new InternalServerErrorException(
+          '저장하던 중 오류가 발생했습니다.',
+        );
+      }
+      await this.addAlert(savedList, fromMember, toFriend, true);
+    }
+
+    return {
+      isSuccess: true,
+    };
+  }
+
+  async createExistQuestionnaire(
+    existentList: QuestionnaireListEntity,
+    details: QuestionnaireDetailEntity[],
+  ): Promise<void> {
+    details.forEach((detail) => {
+      detail.questionList = existentList;
+      detail.createdStep = existentList.createdStep + 1;
+    });
+    const questionnaireDetail: QuestionnaireDetailEntity[] | null =
+      await this.detailEntityRepository.save(details);
+
+    existentList.createdStep += 1;
+    existentList.isCompleted = false;
+    const questionnaireList: QuestionnaireListEntity | null =
+      await this.listEntityRepository.save(existentList);
+
+    if (!questionnaireList || !questionnaireDetail) {
+      throw new InternalServerErrorException(
+        '저장하는 중 오류가 발생했습니다.',
+      );
+    }
+  }
+
+  async addAlert(
+    questionnaireList: QuestionnaireListEntity,
+    fromMember: Member,
+    toFriend: FriendEntity,
+    isRequestAlert: boolean,
+  ): Promise<void> {
+    // 아직 받는 사람이 가입자고, 서로가 서로의 친구고, 보낸 사람이 받는 사람 친구의 전체 그룹에 있는 경우만 됨
+    const alert: AlertEntity = new AlertEntity();
+    alert.questionnaireList = questionnaireList;
+    alert.isRequestAlert = isRequestAlert;
+
+    if (!toFriend.isMember) {
+      // 친구가 미가입자면 알림 pass
+      return;
+    }
+
+    const toMember: Member | null = await this.memberRepository.findOne({
+      where: {
+        kakaoId: toFriend.kakaoId,
+      },
+    });
+    if (!toMember) {
+      throw new InternalServerErrorException('존재하지 않는 계정입니다.');
+    }
+    alert.member = toMember;
+
+    const fromFriend: FriendEntity | null =
+      await this.friendListRepository.findOne({
+        where: {
+          kakaoId: fromMember.kakaoId,
+          groupId: toMember.defaultGroupId,
+        },
+      });
+    if (!fromFriend) {
+      throw new InternalServerErrorException(
+        '친구 목록에 보내는 사람이 등록되지 않았습니다.',
+      );
+    }
+    alert.friend = fromFriend;
+
+    if (!(await this.alertRepository.save(alert))) {
+      throw new InternalServerErrorException(
+        '알림을 저장하던 중 오류가 발생했습니다.',
+      );
     }
   }
 

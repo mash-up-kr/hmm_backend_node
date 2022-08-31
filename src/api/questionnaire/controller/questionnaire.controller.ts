@@ -14,7 +14,6 @@ import { QuestionnaireService } from '../service/questionnaire.service';
 import { QuestionnaireCreationDto } from '../model/questionnaire-creation-dto';
 import { QuestionnaireAnswerCreationDto } from '../model/questionnaire-answer-creation-dto';
 import { JwtAuthGuard } from '../../member/guard/jwt.guard';
-import { QuestionnaireListEntity } from '../model/questionnaire-list.entity';
 import { QuestionnaireCreationResponse } from '../model/questionnaire-creation.response';
 import { QuestionnaireAnswerResponse } from '../model/questionnaire-answer.response';
 import { ProfileReadResponse } from '../model/profile-read.response';
@@ -40,9 +39,12 @@ export class QuestionnaireController {
   @Post()
   async createQuestionnaire(
     @Body() createDto: QuestionnaireCreationDto,
-    @Req() req: Request,
+    @Req() req: User,
   ): Promise<QuestionnaireCreationResponse> {
-    return await this.questionnaireService.createQuestionnaire(createDto, req);
+    return await this.questionnaireService.createQuestionnaire(
+      createDto,
+      req.user.id,
+    );
   }
 
   // 친구 답변 저장 & 질문지 답변 완료로 표시
@@ -51,9 +53,14 @@ export class QuestionnaireController {
     @Param('listId') listId: number,
     @Body()
     answerCreationDto: QuestionnaireAnswerCreationDto[],
+    @Req() req: User,
   ): Promise<QuestionnaireAnswerResponse> {
     try {
-      await this.questionnaireService.putAnswer(listId, answerCreationDto);
+      await this.questionnaireService.putAnswer(
+        listId,
+        answerCreationDto,
+        req.user.id,
+      );
       await this.questionnaireService.completeQuestionnaire(listId);
 
       return {
