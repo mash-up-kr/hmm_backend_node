@@ -6,10 +6,13 @@ import {
   BadRequestException,
   InternalServerErrorException,
 } from '@nestjs/common';
+import { FriendGroupEntity } from '../../../friend-group/model/friend-group.entity';
 import { FriendUpdateDto } from '../../model/friend-update.dto';
 
 export class FriendListHandlerService {
   constructor(
+    @InjectRepository(FriendEntity)
+    private friendGroupEntityRepository: Repository<FriendGroupEntity>,
     @InjectRepository(FriendEntity)
     private friendListEntityRepository: Repository<FriendEntity>,
   ) {}
@@ -42,7 +45,22 @@ export class FriendListHandlerService {
   async updateFriend(friendId: number, dto: FriendUpdateDto) {
     this.assertUpdateFriendWithKakaoId(dto);
     try {
-      await this.friendListEntityRepository.update(friendId, dto);
+      // 1. friendId 로 groupId 를 가져온다.
+      const group = await this.friendGroupEntityRepository.findOneBy({
+        id: friendId,
+      });
+      if (group === null) {
+        throw new BadRequestException('존재하지 않는 친구입니다.');
+      }
+      const groupId = group.id;
+      const group = await this.friendGroupEntityRepository.findOneBy({
+        id: groupId,
+      });
+
+      // 3. 모든 친구들이면 update가 아니라 save를 한다.
+
+      friend.await; // 2 groupId 로 그룹명을 확인한다.
+      this.friendListEntityRepository.update(friendId, dto);
     } catch (e) {
       throw new InternalServerErrorException('친구정보 수정에 실패했습니다.');
     }
