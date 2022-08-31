@@ -11,7 +11,7 @@ import { FriendUpdateDto } from '../../model/friend-update.dto';
 
 export class FriendListHandlerService {
   constructor(
-    @InjectRepository(FriendEntity)
+    @InjectRepository(FriendGroupEntity)
     private friendGroupEntityRepository: Repository<FriendGroupEntity>,
     @InjectRepository(FriendEntity)
     private friendListEntityRepository: Repository<FriendEntity>,
@@ -44,24 +44,56 @@ export class FriendListHandlerService {
 
   async updateFriend(friendId: number, dto: FriendUpdateDto) {
     this.assertUpdateFriendWithKakaoId(dto);
-    try {
-      // 1. friendId 로 groupId 를 가져온다.
-      const group = await this.friendGroupEntityRepository.findOneBy({
-        id: friendId,
+    const friendEntities = await this.getFriendEntities(friendId);
+    friendEntities.map(async (groupId) => {
+      const groups = await this.friendGroupEntityRepository.findBy({
+        id: groupId.groupId,
       });
-      if (group === null) {
-        throw new BadRequestException('존재하지 않는 친구입니다.');
+      if (groups.length === 1) {
+        const [group] = groups;
+        await this.executeUpdateOrSave(group, friendId, dto);
+      } else {
+        const notAllGroup = groups.filter(
+          (group) => group.name !== '모든 친구들',
+        );
+        const [group] = notAllGroup;
+        await this.executeUpdateOrSave(group, friendId, dto);
       }
-      const groupId = group.id;
-      const group = await this.friendGroupEntityRepository.findOneBy({
-        id: groupId,
-      });
+    });
+  }
 
-      // 3. 모든 친구들이면 update가 아니라 save를 한다.
+  async deleteFriend(friendId: number) {
+    const { affected } = await this.friendListEntityRepository.delete(friendId);
+    if (!affected) {
+      throw new BadRequestException('삭제할 친구가 없습니다.');
+    }
+    return { isSuccess: true };
+  }
 
-      friend.await; // 2 groupId 로 그룹명을 확인한다.
-      this.friendListEntityRepository.update(friendId, dto);
-    } catch (e) {
+  private async getFriendEntities(friendId: number) {
+    const friendEntities = await this.friendListEntityRepository.findBy({
+      id: friendId,
+    });
+
+    if (friendEntities.length === 0 || friendEntities.length > 2) {
+      throw new InternalServerErrorException('그룹이 잘못되었어요 확인하세요');
+    }
+    return friendEntities;
+  }
+
+  private async executeUpdateOrSave(
+    group: FriendGroupEntity,
+    friendId: number,
+    dto: FriendUpdateDto,
+  ) {
+    console.log(group.name);
+    try {
+      if (group.name === '모든 친구들') {
+        await this.friendListEntityRepository.save(dto);
+      } else {
+        await this.friendListEntityRepository.update(friendId, dto);
+      }
+    } catch {
       throw new InternalServerErrorException('친구정보 수정에 실패했습니다.');
     }
   }
@@ -74,14 +106,6 @@ export class FriendListHandlerService {
         );
       }
     }
-  }
-
-  async deleteFriend(friendId: number) {
-    const { affected } = await this.friendListEntityRepository.delete(friendId);
-    if (!affected) {
-      throw new BadRequestException('삭제할 친구가 없습니다.');
-    }
-    return { isSuccess: true };
   }
 
   private getFriendEntityForSave(dto: FriendDto) {

@@ -50,7 +50,6 @@ export class FriendController {
 
   /**
    * @description 친구정보 수정하기
-   *
    */
   @Post(':friendId')
   async updateFriend(
