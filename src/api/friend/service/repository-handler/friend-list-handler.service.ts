@@ -23,6 +23,7 @@ export class FriendListHandlerService {
         id: friend.id,
         name: friend.name,
         thumbnailImageUrl: friend.thumbnailImageUrl,
+        isMember: friend.isMember,
       };
     });
   }
