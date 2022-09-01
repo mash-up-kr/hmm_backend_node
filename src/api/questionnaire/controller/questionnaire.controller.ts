@@ -49,6 +49,7 @@ export class QuestionnaireController {
 
   // 친구 답변 저장 & 질문지 답변 완료로 표시
   @Put('/:listId')
+  @UseGuards(JwtAuthGuard)
   async createFriendAnswer(
     @Param('listId') listId: number,
     @Body()

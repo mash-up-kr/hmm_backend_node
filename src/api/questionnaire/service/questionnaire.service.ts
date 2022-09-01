@@ -164,8 +164,8 @@ export class QuestionnaireService {
     const toFriend: FriendEntity | null =
       await this.friendListRepository.findOne({
         where: {
-          kakaoId: fromMember.kakaoId,
-          groupId: toMember.defaultGroupId,
+          kakaoId: toMember.kakaoId,
+          groupId: fromMember.defaultGroupId,
         },
       });
     if (!toFriend) {
